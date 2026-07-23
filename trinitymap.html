@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<!--
+  Trinity Map — an interactive diagram of Trinitarian structure
+  Part of karunb09/Bible-study
+  Licensed CC-BY-SA-4.0, per repository LICENSE
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Triune God — a map of the constraints</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2A4A;
+    --ink-deep:#121D33;
+    --ink-line:#2E4066;
+    --vellum:#E8E2D4;
+    --vellum-dim:#B9B2A0;
+    --gold:#C8963E;
+    --gold-soft:#E0B463;
+    --rust:#A54B32;
+    --rust-soft:#C97054;
+    --slate:#7E8CA8;
+    --display:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+    --body:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{margin:0;padding:0;}
+
+  body{
+    background:var(--ink);
+    background-image:radial-gradient(ellipse 120% 80% at 50% 0%, #22345C 0%, var(--ink) 45%, var(--ink-deep) 100%);
+    background-attachment:fixed;
+    color:var(--vellum);
+    font-family:var(--body);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{max-width:760px;margin:0 auto;padding:44px 22px 90px;}
+
+  /* ---------- masthead ---------- */
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin:0 0 18px;
+  }
+  h1{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:clamp(38px,9vw,62px);
+    line-height:1.02;
+    letter-spacing:-.015em;
+    margin:0 0 16px;
+  }
+  h1 em{font-style:italic;color:var(--gold-soft);}
+  .standfirst{
+    font-size:17px;
+    color:#C9C2B2;
+    max-width:52ch;
+    margin:0 0 8px;
+  }
+
+  /* ---------- shield ---------- */
+  .shield-stage{
+    margin:38px 0 0;
+    padding:22px 10px 6px;
+    border:1px solid var(--ink-line);
+    border-radius:3px;
+    background:rgba(9,16,30,.42);
+  }
+  svg.shield{display:block;width:100%;height:auto;max-width:440px;margin:0 auto;}
+
+  .node-ring{
+    fill:rgba(232,226,212,.05);
+    stroke:var(--vellum-dim);
+    stroke-width:1.4;
+    transition:cx .5s cubic-bezier(.4,0,.2,1),cy .5s cubic-bezier(.4,0,.2,1),
+               r .5s cubic-bezier(.4,0,.2,1),stroke .35s,fill .35s,opacity .35s;
+  }
+  .node-ring.is-center{stroke:var(--gold);fill:rgba(200,150,62,.11);}
+  .node-ring.is-fallen{stroke:var(--rust);fill:rgba(165,75,50,.14);}
+  .node-ring.is-ghost{opacity:.18;}
+
+  text{transition:x .5s cubic-bezier(.4,0,.2,1),y .5s cubic-bezier(.4,0,.2,1),opacity .3s;}
+  .node-label{
+    font-family:var(--body);
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    fill:var(--vellum);
+    text-anchor:middle;
+    dominant-baseline:middle;
+  }
+  .node-label.is-center{fill:var(--gold-soft);font-size:14px;}
+  .node-label.is-fallen{fill:var(--rust-soft);}
+  .node-sub{
+    font-family:var(--mono);
+    font-size:9px;
+    letter-spacing:.1em;
+    fill:var(--slate);
+    text-anchor:middle;
+    dominant-baseline:middle;
+  }
+
+  #edges{transition:opacity .16s linear;}
+  .edge-is{stroke:var(--gold);stroke-width:1.5;}
+  .edge-isnot{stroke:var(--rust);stroke-width:1.5;stroke-dasharray:5 4;}
+  .edge-made{stroke:var(--rust);stroke-width:1.5;stroke-dasharray:2 5;}
+  .edge-label{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    text-anchor:middle;
+    dominant-baseline:middle;
+  }
+  .edge-label.is{fill:var(--gold);}
+  .edge-label.isnot{fill:var(--rust-soft);}
+  .edge-plate{fill:#16233E;}
+
+  /* ---------- controls ---------- */
+  .control-head{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--slate);
+    margin:26px 0 11px;
+  }
+  .controls{display:flex;flex-wrap:wrap;gap:7px;}
+  button{
+    font-family:var(--body);
+    font-size:13px;
+    font-weight:500;
+    color:var(--vellum);
+    background:transparent;
+    border:1px solid var(--ink-line);
+    border-radius:2px;
+    padding:8px 13px;
+    cursor:pointer;
+    transition:border-color .2s,background .2s,color .2s;
+  }
+  button:hover{border-color:var(--vellum-dim);}
+  button:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+  button[aria-pressed="true"]{
+    border-color:var(--gold);
+    background:rgba(200,150,62,.13);
+    color:var(--gold-soft);
+  }
+  button.break[aria-pressed="true"]{
+    border-color:var(--rust);
+    background:rgba(165,75,50,.16);
+    color:var(--rust-soft);
+  }
+
+  .readout{
+    margin-top:16px;
+    padding:17px 18px;
+    border-left:2px solid var(--gold);
+    background:rgba(9,16,30,.5);
+  }
+  .readout.is-break{border-left-color:var(--rust);}
+  .readout h3{
+    font-family:var(--display);
+    font-size:25px;
+    font-weight:600;
+    margin:0 0 3px;
+    letter-spacing:-.01em;
+  }
+  .readout .tag{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--slate);
+    display:block;
+    margin-bottom:9px;
+  }
+  .readout p{margin:0 0 9px;font-size:15px;color:#C9C2B2;}
+  .readout p:last-child{margin-bottom:0;}
+  .readout .breaks{color:var(--vellum);}
+  .readout .breaks b{
+    font-family:var(--mono);
+    font-size:10px;
+    font-weight:500;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--rust-soft);
+    display:block;
+  }
+
+  /* ---------- sections ---------- */
+  section{margin-top:66px;}
+  h2{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:clamp(27px,6vw,38px);
+    line-height:1.14;
+    margin:0 0 7px;
+    letter-spacing:-.01em;
+  }
+  .section-note{color:var(--slate);font-size:15px;margin:0 0 26px;max-width:56ch;}
+
+  .claim{
+    display:grid;
+    grid-template-columns:34px 1fr;
+    gap:0 15px;
+    padding:16px 0;
+    border-top:1px solid var(--ink-line);
+  }
+  .claim:last-of-type{border-bottom:1px solid var(--ink-line);}
+  .claim .num{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--gold);
+    padding-top:3px;
+  }
+  .claim .stmt{
+    font-family:var(--display);
+    font-size:23px;
+    line-height:1.25;
+    margin:0 0 5px;
+  }
+  .claim .gloss{margin:0 0 9px;color:#C9C2B2;font-size:15px;}
+  .refs{
+    font-family:var(--mono);
+    font-size:11.5px;
+    letter-spacing:.02em;
+    color:var(--slate);
+    margin:0;
+  }
+  .refs span{white-space:nowrap;}
+  .refs span::after{content:" · ";color:var(--ink-line);}
+  .refs span:last-child::after{content:"";}
+
+  .audit{
+    padding:15px 0;
+    border-top:1px solid var(--ink-line);
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:3px 14px;
+    align-items:baseline;
+  }
+  .audit:last-of-type{border-bottom:1px solid var(--ink-line);}
+  .audit .an{font-size:16px;font-weight:500;}
+  .audit .verdict{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--rust-soft);
+    white-space:nowrap;
+  }
+  .audit .why{grid-column:1/-1;margin:0;font-size:14.5px;color:var(--slate);}
+
+  .coda{
+    margin-top:34px;
+    padding:24px 0 0;
+    border-top:1px solid var(--gold);
+  }
+  .coda p{
+    font-family:var(--display);
+    font-size:21px;
+    line-height:1.42;
+    color:var(--vellum);
+    margin:0 0 13px;
+    max-width:50ch;
+  }
+  .coda p:last-child{margin-bottom:0;}
+  .coda .small{
+    font-family:var(--body);
+    font-size:15px;
+    color:var(--slate);
+    max-width:56ch;
+  }
+
+  @media (max-width:480px){
+    .wrap{padding:34px 18px 70px;}
+    .claim{grid-template-columns:26px 1fr;gap:0 11px;}
+    .claim .stmt{font-size:20px;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition-duration:.01ms !important;animation-duration:.01ms !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">A map, not a picture</p>
+  <h1>One God,<br>three who are<br><em>not each other</em></h1>
+  <p class="standfirst">Nobody found this stated in a verse. It's what you're left holding when you refuse to drop any of five claims that each have their own footing in the text. The diagram below is the oldest attempt to draw that shape — it's from the 1200s, and it still works.</p>
+
+  <div class="shield-stage">
+    <svg class="shield" viewBox="0 0 400 372" role="img" aria-labelledby="shield-title">
+      <title id="shield-title">Diagram of the relations between Father, Son, Spirit, and God</title>
+      <g id="edges"></g>
+      <g id="nodes"></g>
+    </svg>
+  </div>
+
+  <p class="control-head">Now break it — drop one claim and watch the shape fail</p>
+  <div class="controls" id="controls"></div>
+  <div class="readout" id="readout"></div>
+
+  <section>
+    <h2>The five claims</h2>
+    <p class="section-note">Each one is load-bearing. Every historic error is just the shape of letting go of one.</p>
+
+    <div class="claim">
+      <div class="num">01</div>
+      <div>
+        <p class="stmt">There is one God.</p>
+        <p class="gloss">The hardest constraint — everything else bends around it. Watch what Paul does in 1 Cor 8:6: he takes the two words of the Shema, <em>God</em> and <em>Lord</em>, and splits them across the Father and Jesus. That is a Jew doing something startling to his own creed while insisting he hasn't broken it.</p>
+        <p class="refs"><span>Deut 6:4</span><span>Isa 45:5</span><span>1 Cor 8:6</span></p>
+      </div>
+    </div>
+
+    <div class="claim">
+      <div class="num">02</div>
+      <div>
+        <p class="stmt">The Father is God.</p>
+        <p class="gloss">The only one nobody has ever contested. Worth stating anyway, because the argument needs it as a fixed point to measure the other two against.</p>
+        <p class="refs"><span>assumed everywhere</span></p>
+      </div>
+    </div>
+
+    <div class="claim">
+      <div class="num">03</div>
+      <div>
+        <p class="stmt">The Son is God.</p>
+        <p class="gloss">John 1:1 does distinction and identity in one sentence — <em>with</em> God, and <em>was</em> God. Thomas says "my Lord and my God" and is not corrected. Philippians applies Isaiah 45:23 to Jesus, and in that passage the speaker is YHWH insisting there is no other. But the strongest evidence isn't a verse — it's the practice. <span style="font-family:var(--mono);font-size:13px;">Marana tha</span> in 1 Cor 16:22 is Aramaic, so it predates the Greek-speaking church: they were praying to him within a couple of decades, and these were people who would die before praying to anyone but God.</p>
+        <p class="refs"><span>John 1:1</span><span>John 20:28</span><span>Phil 2:10–11 ← Isa 45:23</span><span>1 Cor 16:22</span></p>
+      </div>
+    </div>
+
+    <div class="claim">
+      <div class="num">04</div>
+      <div>
+        <p class="stmt">The Spirit is God.</p>
+        <p class="gloss">Honestly the thinnest strand, and I'd rather say so than pretend. There's no single declarative verse. It rests on how the Spirit is spoken of — lying to the Spirit counts as lying to God; the Spirit searches God's own depths the way your spirit knows your thoughts; the Spirit speaks, forbids, decides, grieves. That's why this piece took until 381 to settle.</p>
+        <p class="refs"><span>Acts 5:3–4</span><span>1 Cor 2:10–11</span><span>Acts 13:2</span><span>Eph 4:30</span></p>
+      </div>
+    </div>
+
+    <div class="claim">
+      <div class="num">05</div>
+      <div>
+        <p class="stmt">The three are genuinely distinct.</p>
+        <p class="gloss">Not three names for one actor. Jesus prays to the Father rather than to himself, and Gethsemane is unintelligible otherwise. All three are present at once at the baptism — voice, body, dove — which is a hard scene to stage with one character.</p>
+        <p class="refs"><span>Matt 3:16–17</span><span>Luke 22:42</span><span>John 17:5</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The analogies your class has already heard</h2>
+    <p class="section-note">All of these get taught. Each one is a named error with a date attached. Worth knowing which, because a sharp twelve-year-old will push on them.</p>
+
+    <div class="audit">
+      <div class="an">Water, ice, steam</div>
+      <div class="verdict">Modalism</div>
+      <p class="why">One substance in three states, and never in more than one at a time. That's exactly the claim the baptism scene rules out.</p>
+    </div>
+
+    <div class="audit">
+      <div class="an">An egg: shell, white, yolk</div>
+      <div class="verdict">Partialism</div>
+      <p class="why">No part of an egg is the egg. But the Father isn't a third of God — he <em>is</em> God, entirely.</p>
+    </div>
+
+    <div class="audit">
+      <div class="an">A three-leaf clover</div>
+      <div class="verdict">Partialism</div>
+      <p class="why">Same failure, better PR. A leaf is a piece of a plant, not the plant.</p>
+    </div>
+
+    <div class="audit">
+      <div class="an">One man: father, son, employee</div>
+      <div class="verdict">Modalism</div>
+      <p class="why">Those are roles he holds toward other people, not distinctions within him. He never talks to himself in any of them.</p>
+    </div>
+
+    <div class="audit">
+      <div class="an">The sun: star, light, heat</div>
+      <div class="verdict">Arianism, roughly</div>
+      <p class="why">Light and heat are effects the sun throws off — later than it, lesser than it, dependent on it. That's the exact thing the Nicene fight was about.</p>
+    </div>
+
+    <div class="coda">
+      <p>Every analogy fails, and they fail in the same place. Everything in creation is either one thing or several things. The claim is that God is not an instance of either.</p>
+      <p class="small">So the failure isn't a gap in your teaching that a better illustration would close. It's the content. Probably the most useful thing you can do with a class this age is hand them the water-ice-steam analogy, let them like it, and then ask who Jesus was talking to in the garden.</p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var P = {
+    F:{x:200,y:62},
+    S:{x:68,y:288},
+    H:{x:332,y:288},
+    G:{x:200,y:205}
+  };
+
+  var STATES = {
+    orthodox:{
+      label:"The shape as held",
+      tag:"All five claims kept",
+      kind:"ok",
+      body:["Each of the three is God. None of the three is either of the other two. There is one God. That's the whole grammar — there isn't a further explanation hiding behind it."],
+      breaks:null,
+      nodes:[
+        {id:"F",p:P.F,t:"Father",r:47},
+        {id:"S",p:P.S,t:"Son",r:47},
+        {id:"H",p:P.H,t:"Spirit",r:47},
+        {id:"G",p:P.G,t:"God",r:42,center:true}
+      ],
+      edges:[
+        {a:P.F,b:P.G,type:"is"},{a:P.S,b:P.G,type:"is"},{a:P.H,b:P.G,type:"is"},
+        {a:P.F,b:P.S,type:"isnot"},{a:P.F,b:P.H,type:"isnot"},{a:P.S,b:P.H,type:"isnot"}
+      ]
+    },
+
+    modalism:{
+      label:"Modalism",
+      tag:"Claim 05 dropped — condemned 269",
+      kind:"break",
+      body:["God is one person wearing three masks in sequence. Father in the Old Testament, Son in the gospels, Spirit now. The three collapse into one actor changing costume."],
+      breaks:"Gethsemane. If there's one actor, Jesus is a man talking to himself — \"not my will but yours\" is theatre. And at the baptism you'd need him to be the voice, the body, and the dove simultaneously.",
+      nodes:[
+        {id:"F",p:{x:200,y:158},t:"Father",r:44,fallen:true},
+        {id:"S",p:{x:200,y:205},t:"Son",r:44,fallen:true},
+        {id:"H",p:{x:200,y:252},t:"Spirit",r:44,fallen:true},
+        {id:"G",p:{x:200,y:205},t:"",r:78,center:true,ghost:true}
+      ],
+      edges:[]
+    },
+
+    arianism:{
+      label:"Arianism",
+      tag:"Claim 03 downgraded — condemned 325",
+      kind:"break",
+      body:["The Son is the first and greatest thing God ever made — glorious, pre-existent, worth honouring, but made. There was a moment before which he was not."],
+      breaks:"John 1:3 — everything that was made was made through him. That sentence puts him outside the made category by definition. And the worship: they were praying to him in Aramaic within twenty years, and a first-century Jew does not pray to a creature.",
+      nodes:[
+        {id:"F",p:{x:200,y:88},t:"Father",r:47},
+        {id:"H",p:{x:200,y:222},t:"Spirit",r:47},
+        {id:"S",p:{x:200,y:330},t:"Son",r:47,fallen:true,sub:"made"},
+        {id:"G",p:{x:200,y:155},t:"",r:0,center:true,ghost:true}
+      ],
+      edges:[
+        {a:{x:200,y:88},b:{x:200,y:222},type:"is",label:"is"},
+        {a:{x:200,y:222},b:{x:200,y:330},type:"made",label:"made"}
+      ]
+    },
+
+    tritheism:{
+      label:"Tritheism",
+      tag:"Claim 01 dropped",
+      kind:"break",
+      body:["Three separate gods who cooperate closely and agree about everything. Nobody has ever taught this deliberately — it's where you drift if you press distinctness and stop watching the first claim."],
+      breaks:"The Shema, and the whole Old Testament behind it. Also the New Testament writers' own nerve: they never once flinch or qualify on there being one God, even while they're praying to Jesus.",
+      nodes:[
+        {id:"F",p:{x:200,y:70},t:"God",r:44,fallen:true,sub:"father"},
+        {id:"S",p:{x:66,y:296},t:"God",r:44,fallen:true,sub:"son"},
+        {id:"H",p:{x:334,y:296},t:"God",r:44,fallen:true,sub:"spirit"},
+        {id:"G",p:P.G,t:"",r:0,center:true,ghost:true}
+      ],
+      edges:[
+        {a:{x:200,y:70},b:{x:66,y:296},type:"isnot"},
+        {a:{x:200,y:70},b:{x:334,y:296},type:"isnot"},
+        {a:{x:66,y:296},b:{x:334,y:296},type:"isnot"}
+      ]
+    },
+
+    partialism:{
+      label:"Partialism",
+      tag:"The one Sunday school actually teaches",
+      kind:"break",
+      body:["Each is one third of God. Put them together and you get the whole. This is what the egg and the clover teach, whatever the teacher meant to say."],
+      breaks:"The Father is not a component. When Jesus says whoever has seen him has seen the Father, he isn't claiming to be a representative sample. Each of the three is God entirely, not God partly.",
+      nodes:[
+        {id:"F",p:{x:200,y:132},t:"⅓",r:40,fallen:true,sub:"father"},
+        {id:"S",p:{x:134,y:246},t:"⅓",r:40,fallen:true,sub:"son"},
+        {id:"H",p:{x:266,y:246},t:"⅓",r:40,fallen:true,sub:"spirit"},
+        {id:"G",p:{x:200,y:205},t:"",r:112,center:true,ghost:true}
+      ],
+      edges:[]
+    }
+  };
+
+  var ORDER = ["orthodox","modalism","arianism","tritheism","partialism"];
+  var BTN_TEXT = {
+    orthodox:"The shape as held",
+    modalism:"Drop “distinct”",
+    arianism:"Downgrade the Son",
+    tritheism:"Drop “one God”",
+    partialism:"Make them thirds"
+  };
+
+  var svgNS = "http://www.w3.org/2000/svg";
+  var edgesG = document.getElementById("edges");
+  var nodesG = document.getElementById("nodes");
+  var readout = document.getElementById("readout");
+  var controls = document.getElementById("controls");
+  var current = null;
+  var nodeEls = {};
+
+  function el(name,attrs){
+    var e = document.createElementNS(svgNS,name);
+    for(var k in attrs){ e.setAttribute(k,attrs[k]); }
+    return e;
+  }
+
+  function buildNodes(){
+    ["F","S","H","G"].forEach(function(id){
+      var ring = el("circle",{class:"node-ring",cx:200,cy:205,r:0});
+      var lab  = el("text",{class:"node-label",x:200,y:205});
+      var sub  = el("text",{class:"node-sub",x:200,y:205});
+      nodesG.appendChild(ring); nodesG.appendChild(lab); nodesG.appendChild(sub);
+      nodeEls[id] = {ring:ring,lab:lab,sub:sub};
+    });
+  }
+
+  function drawEdges(state){
+    while(edgesG.firstChild){ edgesG.removeChild(edgesG.firstChild); }
+    state.edges.forEach(function(e){
+      var cls = e.type === "is" ? "edge-is" : (e.type === "made" ? "edge-made" : "edge-isnot");
+      edgesG.appendChild(el("line",{class:cls,x1:e.a.x,y1:e.a.y,x2:e.b.x,y2:e.b.y}));
+
+      var txt = e.label || (e.type === "is" ? "is" : "is not");
+      var mx = (e.a.x + e.b.x)/2, my = (e.a.y + e.b.y)/2;
+      var w = txt.length * 7 + 14;
+      edgesG.appendChild(el("rect",{class:"edge-plate",x:mx-w/2,y:my-9,width:w,height:18,rx:2}));
+      var t = el("text",{class:"edge-label " + (e.type === "is" ? "is" : "isnot"),x:mx,y:my+1});
+      t.textContent = txt;
+      edgesG.appendChild(t);
+    });
+  }
+
+  function applyNodes(state){
+    var seen = {};
+    state.nodes.forEach(function(n){
+      seen[n.id] = true;
+      var g = nodeEls[n.id];
+      g.ring.setAttribute("cx",n.p.x);
+      g.ring.setAttribute("cy",n.p.y);
+      g.ring.setAttribute("r",n.r);
+      g.ring.setAttribute("class","node-ring" +
+        (n.center ? " is-center" : "") +
+        (n.fallen ? " is-fallen" : "") +
+        (n.ghost ? " is-ghost" : ""));
+
+      g.lab.setAttribute("x",n.p.x);
+      g.lab.setAttribute("y",n.sub ? n.p.y - 7 : n.p.y);
+      g.lab.setAttribute("class","node-label" +
+        (n.center && !n.ghost ? " is-center" : "") +
+        (n.fallen ? " is-fallen" : ""));
+      g.lab.textContent = n.t || "";
+
+      g.sub.setAttribute("x",n.p.x);
+      g.sub.setAttribute("y",n.p.y + 11);
+      g.sub.textContent = n.sub ? n.sub.toUpperCase() : "";
+    });
+    ["F","S","H","G"].forEach(function(id){
+      if(!seen[id]){ nodeEls[id].ring.setAttribute("r",0); nodeEls[id].lab.textContent=""; nodeEls[id].sub.textContent=""; }
+    });
+  }
+
+  function writeReadout(state){
+    readout.className = "readout" + (state.kind === "break" ? " is-break" : "");
+    var html = '<h3>' + state.label + '</h3><span class="tag">' + state.tag + '</span>';
+    state.body.forEach(function(p){ html += '<p>' + p + '</p>'; });
+    if(state.breaks){
+      html += '<p class="breaks"><b>Where it fails</b>' + state.breaks + '</p>';
+    }
+    readout.innerHTML = html;
+  }
+
+  function show(key){
+    if(key === current) return;
+    current = key;
+    var state = STATES[key];
+
+    Array.prototype.forEach.call(controls.children,function(b){
+      b.setAttribute("aria-pressed", b.dataset.key === key ? "true" : "false");
+    });
+
+    edgesG.style.opacity = "0";
+    applyNodes(state);
+    writeReadout(state);
+    window.setTimeout(function(){
+      drawEdges(state);
+      edgesG.style.opacity = "1";
+    },160);
+  }
+
+  ORDER.forEach(function(key){
+    var b = document.createElement("button");
+    b.textContent = BTN_TEXT[key];
+    b.dataset.key = key;
+    b.setAttribute("aria-pressed","false");
+    if(STATES[key].kind === "break"){ b.className = "break"; }
+    b.addEventListener("click",function(){ show(key); });
+    controls.appendChild(b);
+  });
+
+  buildNodes();
+  show("orthodox");
+})();
+</script>
+</body>
+</html>
