@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Doctrine of Sin — A Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0E1B17;
+  --ground:#132220;
+  --panel:#1A2E29;
+  --panel-2:#213831;
+  --line:#2C4139;
+  --bone:#E9E5D8;
+  --sage:#93A79C;
+  --ochre:#D4A82C;
+  --oxblood:#B85A52;
+
+  --display:"Fraunces",Georgia,serif;
+  --body:"Newsreader",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+
+  --pad:clamp(1.1rem,4vw,2.75rem);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--bone);
+  font-family:var(--body);
+  font-size:clamp(1rem,0.96rem + 0.2vw,1.075rem);
+  line-height:1.62;
+  font-weight:300;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--ochre);text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--ochre);outline-offset:3px;border-radius:2px}
+
+.eyebrow{
+  font-family:var(--mono);
+  font-size:.62rem;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--sage);
+}
+
+/* ---------- hero ---------- */
+.hero{
+  padding:clamp(2.5rem,8vw,5rem) var(--pad) clamp(2rem,5vw,3.5rem);
+  border-bottom:1px solid var(--line);
+  background:
+    radial-gradient(120% 90% at 8% 0%, #1B302A 0%, rgba(19,34,32,0) 62%),
+    var(--ground);
+}
+.hero h1{
+  font-family:var(--display);
+  font-weight:300;
+  font-size:clamp(2.9rem,11vw,6.4rem);
+  line-height:.92;
+  letter-spacing:-.025em;
+  margin:.6rem 0 0;
+}
+.hero h1 em{
+  font-style:normal;
+  display:block;
+  color:var(--ochre);
+  font-weight:500;
+}
+.thesis{
+  margin:clamp(1.4rem,4vw,2rem) 0 0;
+  max-width:34ch;
+  font-size:clamp(1.05rem,1rem + .5vw,1.3rem);
+  color:var(--bone);
+  line-height:1.45;
+}
+.thesis b{font-weight:600;color:var(--ochre)}
+.subnote{margin-top:.9rem;max-width:52ch;color:var(--sage);font-size:.95rem}
+
+/* ---------- four states strip ---------- */
+.states{
+  margin-top:clamp(2rem,6vw,3.2rem);
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--line);
+  border-radius:3px;
+  overflow:hidden;
+}
+.state{
+  padding:.95rem .8rem 1.05rem;
+  border-right:1px solid var(--line);
+  background:var(--panel);
+}
+.state:last-child{border-right:0}
+.state .n{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--sage);display:block;margin-bottom:.45rem;
+}
+.state .lat{
+  font-family:var(--mono);font-size:.78rem;line-height:1.35;color:var(--bone);
+  display:block;
+}
+.state .en{display:block;margin-top:.4rem;font-size:.82rem;color:var(--sage);line-height:1.35}
+.state.fallen{background:linear-gradient(180deg,#2A1D1D,#231A1A);border-top:2px solid var(--oxblood)}
+.state.fallen .lat{color:var(--oxblood);font-weight:500}
+@media(max-width:640px){
+  .states{grid-template-columns:repeat(2,1fr)}
+  .state:nth-child(2){border-right:0}
+  .state:nth-child(1),.state:nth-child(2){border-bottom:1px solid var(--line)}
+}
+
+/* ---------- controls ---------- */
+.controls{
+  position:sticky;top:0;z-index:40;
+  background:rgba(14,27,23,.94);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.controls-inner{
+  display:flex;gap:.6rem;align-items:center;
+  padding:.55rem var(--pad);
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.controls-inner::-webkit-scrollbar{display:none}
+.chip{
+  flex:0 0 auto;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--sage);background:transparent;border:1px solid var(--line);
+  padding:.4rem .62rem;border-radius:2px;cursor:pointer;
+  transition:color .18s,border-color .18s,background .18s;
+  white-space:nowrap;
+}
+.chip:hover{color:var(--bone);border-color:var(--sage)}
+.chip.active{color:var(--ink);background:var(--ochre);border-color:var(--ochre);font-weight:500}
+.chip.toggle[aria-pressed="true"]{background:var(--oxblood);border-color:var(--oxblood);color:#fff}
+
+/* ---------- layout ---------- */
+.wrap{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  max-width:1180px;margin:0 auto;
+}
+@media(min-width:960px){
+  .wrap{grid-template-columns:210px minmax(0,1fr);gap:clamp(2rem,4vw,4rem)}
+}
+.toc{display:none}
+@media(min-width:960px){
+  .toc{
+    display:block;position:sticky;top:3.2rem;align-self:start;
+    padding:2.6rem 0 3rem 1.5rem;max-height:calc(100vh - 4rem);overflow-y:auto;
+    scrollbar-width:thin;
+  }
+  .toc ol{list-style:none;margin:0;padding:0}
+  .toc a{
+    display:block;padding:.3rem 0 .3rem .7rem;
+    border-left:1px solid var(--line);
+    color:var(--sage);text-decoration:none;font-size:.83rem;line-height:1.35;
+    transition:color .18s,border-color .18s;
+  }
+  .toc a:hover{color:var(--bone)}
+  .toc a.on{color:var(--ochre);border-left-color:var(--ochre)}
+  .toc .grp{
+    font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;
+    color:#5E7268;margin:1.3rem 0 .4rem .7rem;
+  }
+  .toc .grp:first-child{margin-top:0}
+}
+
+main{padding:clamp(2rem,5vw,3.4rem) var(--pad) 5rem;min-width:0}
+@media(min-width:960px){main{padding-left:0;padding-right:clamp(1rem,3vw,2rem)}}
+
+/* ---------- sections ---------- */
+.sec{padding:clamp(2rem,5vw,3rem) 0;border-top:1px solid var(--line)}
+.sec:first-child{border-top:0;padding-top:0}
+.sec-head{display:flex;flex-wrap:wrap;gap:.55rem;align-items:baseline;margin-bottom:.3rem}
+.sec h2{
+  font-family:var(--display);font-weight:400;
+  font-size:clamp(1.6rem,1.3rem + 1.4vw,2.35rem);
+  line-height:1.08;letter-spacing:-.015em;margin:.15rem 0 .7rem;width:100%;
+}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--sage);border:1px solid var(--line);padding:.22rem .45rem;border-radius:2px;
+}
+.tag.fall{color:var(--oxblood);border-color:#4A2E2C}
+.tag.grace{color:var(--ochre);border-color:#4A3E1E}
+
+p{margin:0 0 1rem;max-width:66ch}
+.lede{color:var(--bone);font-size:1.06em}
+h3{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--sage);font-weight:500;margin:2rem 0 .75rem;
+}
+ul{margin:0 0 1.1rem;padding-left:1.1rem;max-width:66ch}
+li{margin-bottom:.5rem}
+li::marker{color:var(--sage)}
+strong{font-weight:600;color:#F4F1E7}
+
+/* ---------- fault lines ---------- */
+.fault{
+  border-left:2px solid var(--oxblood);
+  background:linear-gradient(90deg,rgba(184,90,82,.09),rgba(184,90,82,0) 70%);
+  padding:.9rem 1rem .95rem;margin:1.4rem 0;max-width:68ch;border-radius:0 3px 3px 0;
+}
+.fault .lbl{
+  display:block;font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--oxblood);margin-bottom:.45rem;
+}
+.fault p{margin:0;max-width:none;font-size:.97rem}
+.fault p + p{margin-top:.6rem}
+
+/* ---------- tables ---------- */
+.scroll-x{overflow-x:auto;margin:1.1rem 0 1.4rem;border:1px solid var(--line);border-radius:3px}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.9rem}
+th,td{padding:.62rem .75rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sage);font-weight:500;background:var(--panel);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:rgba(255,255,255,.022)}
+td.term-cell{font-family:var(--mono);font-size:.8rem;color:var(--ochre);white-space:nowrap}
+td.pos{font-weight:600;color:#F4F1E7;white-space:nowrap}
+.yes{color:var(--ochre)}
+.no{color:var(--oxblood)}
+
+/* ---------- glossary term ---------- */
+button.t{
+  font:inherit;color:inherit;background:none;border:0;padding:0;cursor:help;
+  border-bottom:1px dotted var(--ochre);
+}
+button.t:hover{color:var(--ochre)}
+#tip{
+  position:absolute;z-index:80;max-width:min(20rem,86vw);
+  background:var(--panel-2);border:1px solid var(--line);border-left:2px solid var(--ochre);
+  padding:.65rem .8rem;border-radius:2px;font-size:.86rem;line-height:1.45;
+  box-shadow:0 12px 30px rgba(0,0,0,.45);display:none;
+}
+#tip .h{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--ochre);display:block;margin-bottom:.3rem}
+
+/* ---------- locator (signature) ---------- */
+#locate{border-top:1px solid var(--line)}
+.loc-grid{display:grid;gap:1rem;margin-top:1.4rem}
+@media(min-width:760px){.loc-grid{grid-template-columns:1fr 1fr}}
+.q{border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:1rem}
+.q .qn{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--sage);display:block;margin-bottom:.4rem;
+}
+.q h4{margin:0 0 .8rem;font-family:var(--body);font-weight:600;font-size:1.02rem;line-height:1.35}
+.opt{
+  display:block;width:100%;text-align:left;font:inherit;font-size:.9rem;line-height:1.4;
+  color:var(--bone);background:transparent;border:1px solid var(--line);
+  padding:.55rem .7rem;border-radius:2px;margin-bottom:.4rem;cursor:pointer;
+  transition:border-color .16s,background .16s;
+}
+.opt:hover{border-color:var(--sage)}
+.opt[aria-pressed="true"]{border-color:var(--ochre);background:rgba(212,168,44,.11)}
+.opt[aria-pressed="true"]::before{content:"▸ ";color:var(--ochre)}
+
+#readout{
+  margin-top:1.4rem;border:1px solid var(--line);border-top:2px solid var(--ochre);
+  background:var(--panel);border-radius:3px;padding:clamp(1rem,3vw,1.6rem);
+}
+#readout .placeholder{color:var(--sage);margin:0;font-size:.95rem}
+#readout h3{margin-top:0}
+.cluster{
+  font-family:var(--display);font-weight:500;font-size:clamp(1.3rem,1.1rem + 1vw,1.8rem);
+  line-height:1.15;margin:0 0 .5rem;color:var(--ochre);
+}
+.entail{margin:0 0 .3rem;padding-left:1.1rem}
+.strain{
+  border-left:2px solid var(--oxblood);padding:.7rem .85rem;margin-top:1rem;
+  background:rgba(184,90,82,.08);border-radius:0 3px 3px 0;
+}
+.strain .lbl{
+  display:block;font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--oxblood);margin-bottom:.35rem;
+}
+.strain p{margin:0;font-size:.93rem;max-width:none}
+.reset{
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;
+  background:none;border:1px solid var(--line);color:var(--sage);
+  padding:.35rem .6rem;border-radius:2px;cursor:pointer;margin-top:1rem;
+}
+.reset:hover{color:var(--bone);border-color:var(--sage)}
+
+/* ---------- sources ---------- */
+.src{columns:2;column-gap:2.5rem;font-size:.9rem}
+@media(max-width:700px){.src{columns:1}}
+.src li{break-inside:avoid;color:var(--sage)}
+.src li b{color:var(--bone);font-weight:600}
+
+footer{
+  border-top:1px solid var(--line);padding:1.6rem var(--pad) 2.6rem;
+  color:#5E7268;font-size:.8rem;max-width:1180px;margin:0 auto;
+}
+
+/* ---------- fault-line-only mode ---------- */
+body.faults .body-content{display:none}
+body.faults .sec.no-fault{display:none}
+body.faults .sec h2{margin-bottom:.4rem}
+
+/* ---------- motion ---------- */
+.sec{opacity:1}
+@media(prefers-reduced-motion:no-preference){
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="eyebrow">Hamartiology · a working map</span>
+  <h1>The Doctrine<em>of Sin</em></h1>
+  <p class="thesis">Your doctrine of sin sets the ceiling on your doctrine of <b>grace</b>. Shrink one and you shrink the other.</p>
+  <p class="subnote">Every soteriological system is a hamartiology with its conclusions written out. This map is comparative rather than confessional: it shows where the traditions actually split, and what each split commits you to.</p>
+
+  <div class="states" aria-label="Augustine's four states of human nature">
+    <div class="state">
+      <span class="n">Creation</span>
+      <span class="lat">posse peccare,<br>posse non peccare</span>
+      <span class="en">Able to sin, able not to sin</span>
+    </div>
+    <div class="state fallen">
+      <span class="n">Fall</span>
+      <span class="lat">non posse<br>non peccare</span>
+      <span class="en">Not able not to sin</span>
+    </div>
+    <div class="state">
+      <span class="n">Grace</span>
+      <span class="lat">posse non<br>peccare</span>
+      <span class="en">Able not to sin</span>
+    </div>
+    <div class="state">
+      <span class="n">Glory</span>
+      <span class="lat">non posse<br>peccare</span>
+      <span class="en">Not able to sin</span>
+    </div>
+  </div>
+</header>
+
+<nav class="controls" aria-label="Section navigation and view controls">
+  <div class="controls-inner">
+    <button class="chip toggle" id="faultBtn" aria-pressed="false">Fault lines only</button>
+    <button class="chip" data-jump="essence">Essence</button>
+    <button class="chip" data-jump="original">Original sin</button>
+    <button class="chip" data-jump="believer">The believer</button>
+    <button class="chip" data-jump="providence">God &amp; sin</button>
+    <button class="chip" data-jump="locate">Locate your framework</button>
+  </div>
+</nav>
+
+<div class="wrap">
+  <aside class="toc" aria-label="Contents">
+    <ol id="tocList">
+      <li class="grp">Definition</li>
+      <li><a href="#terms">Terminology</a></li>
+      <li><a href="#origin">Origin of sin</a></li>
+      <li><a href="#essence">Essence of sin</a></li>
+      <li class="grp">Transmission</li>
+      <li><a href="#original">Original sin</a></li>
+      <li><a href="#depravity">Depravity &amp; effects</a></li>
+      <li class="grp">Expression</li>
+      <li><a href="#taxonomy">Actual sin</a></li>
+      <li><a href="#law">Sin &amp; the law</a></li>
+      <li><a href="#consequences">Consequences</a></li>
+      <li class="grp">Under grace</li>
+      <li><a href="#believer">Sin in the believer</a></li>
+      <li><a href="#providence">God's relation to sin</a></li>
+      <li><a href="#christ">Christ &amp; sin</a></li>
+      <li class="grp">Frontier</li>
+      <li><a href="#pressure">Pressure points</a></li>
+      <li><a href="#locate">Locate your framework</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ol>
+  </aside>
+
+  <main>
+
+    <!-- TERMS -->
+    <section class="sec reveal" id="terms">
+      <div class="sec-head"><span class="tag">01 · Definition</span></div>
+      <h2>Terminology — the word field</h2>
+      <div class="body-content">
+        <p class="lede">Sin is not one concept but a semantic cluster. Mapping the vocabulary is what prevents the doctrine from flattening into "moral failure."</p>
+
+        <h3>Hebrew</h3>
+        <div class="scroll-x">
+          <table>
+            <thead><tr><th>Term</th><th>Root idea</th></tr></thead>
+            <tbody>
+              <tr><td class="term-cell">chatta't / chata'</td><td>Missing the mark; failing an objective</td></tr>
+              <tr><td class="term-cell">pesha'</td><td>Rebellion; breach of covenant against a suzerain</td></tr>
+              <tr><td class="term-cell">'awon</td><td>Crookedness, iniquity — carries both guilt <em>and</em> its consequence</td></tr>
+              <tr><td class="term-cell">ra'</td><td>Evil, badness, harm</td></tr>
+              <tr><td class="term-cell">rasha'</td><td>Wickedness; guilt in the forensic sense</td></tr>
+              <tr><td class="term-cell">shagag</td><td>Inadvertent error, straying</td></tr>
+              <tr><td class="term-cell">ma'al</td><td>Treachery, unfaithfulness — especially against holy things</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Greek</h3>
+        <div class="scroll-x">
+          <table>
+            <thead><tr><th>Term</th><th>Root idea</th></tr></thead>
+            <tbody>
+              <tr><td class="term-cell">hamartia</td><td>Missing the mark; in Paul often a <strong>personified power</strong>, not merely an act</td></tr>
+              <tr><td class="term-cell">parabasis</td><td>Overstepping a known boundary — requires a law to transgress</td></tr>
+              <tr><td class="term-cell">paraptoma</td><td>Trespass, false step, lapse</td></tr>
+              <tr><td class="term-cell">anomia</td><td>Lawlessness (1 Jn 3:4)</td></tr>
+              <tr><td class="term-cell">asebeia</td><td>Ungodliness — sin Godward before it is manward</td></tr>
+              <tr><td class="term-cell">adikia</td><td>Unrighteousness, injustice — sin manward</td></tr>
+              <tr><td class="term-cell">opheilema</td><td>Debt (Matt 6:12)</td></tr>
+              <tr><td class="term-cell">epithymia</td><td>Desire, <button class="t" data-h="concupiscentia" data-d="Disordered desire prior to any act of will. Trent: remains in the baptized but is not properly sin. Reformed and Lutheran: is itself sin, since Rom 7:7 makes coveting the test case.">concupiscence</button> — disputed whether sin itself or only its tinder</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="fault">
+        <span class="lbl">Fault line</span>
+        <p><em>Hamartia</em> in Romans 5–7 functions as a reigning power with agency: it enters, reigns, deceives, kills. Any hamartiology that treats sin only as discrete acts cannot account for Paul's grammar — and will produce a soteriology of forgiveness without deliverance.</p>
+      </div>
+    </section>
+
+    <!-- ORIGIN -->
+    <section class="sec reveal" id="origin">
+      <div class="sec-head"><span class="tag fall">02 · Fall</span></div>
+      <h2>Origin of sin</h2>
+      <div class="body-content">
+        <p>Three tiers, in order:</p>
+        <ul>
+          <li><strong>Angelic / pre-human fall.</strong> Isa 14:12–15 and Ezek 28:12–17 (both contested as to referent), Jn 8:44, 1 Tim 3:6, 2 Pet 2:4, Jude 6, Rev 12:9.</li>
+          <li><strong>Human fall.</strong> Gen 3 — Adam's transgression as covenantal breach, not a dietary infraction.</li>
+          <li><strong>Ongoing propagation.</strong> Every subsequent human person.</li>
+        </ul>
+        <p>The unanswerable question: how does a sinless will in a sinless environment produce a sinful choice? Augustine's answer is <button class="t" data-h="deficient causation" data-d="Sin has no positive efficient cause. The will turns from a greater good to a lesser, and the 'cause' is a defect — an absence — rather than a thing. This keeps God from being sin's author.">deficient causation</button>: the will turns from a greater good to a lesser, and the cause is a defect, not a positive efficient cause.</p>
+      </div>
+      <div class="fault">
+        <span class="lbl">Why this matters</span>
+        <p>Sin is finally <strong>irrational</strong> — it has no sufficient reason. That is a feature, not a gap. Give sin a rational cause and you make it necessary; make it necessary and you have made God its author.</p>
+      </div>
+    </section>
+
+    <!-- ESSENCE -->
+    <section class="sec reveal" id="essence">
+      <div class="sec-head"><span class="tag">03 · Definition</span></div>
+      <h2>The essence of sin</h2>
+      <div class="body-content">
+        <p class="lede">These are not mutually exclusive. But each tradition <em>ranks</em> them differently, and the ranking drives everything downstream.</p>
+        <div class="scroll-x">
+          <table>
+            <thead><tr><th>Definition</th><th>Core claim</th><th>Associated with</th></tr></thead>
+            <tbody>
+              <tr><td class="pos">Lawlessness</td><td>Want of conformity to, or violation of, God's law (WSC 14)</td><td>Reformed, confessional Protestant</td></tr>
+              <tr><td class="pos">Privation of good</td><td><button class="t" data-h="privatio boni" data-d="Sin has no positive substance of its own; it is the absence or corruption of a due good. Evil is parasitic on being, never a rival substance — this is the classical answer to metaphysical dualism.">Privatio boni</button> — sin has no substance; it is corrupted good</td><td>Augustine, Aquinas</td></tr>
+              <tr><td class="pos">Unbelief</td><td>The root sin is failure to trust God's word and character</td><td>Luther</td></tr>
+              <tr><td class="pos">Pride</td><td>Self-exaltation; the creature's refusal of creaturehood</td><td>Augustine, R. Niebuhr</td></tr>
+              <tr><td class="pos">Idolatry</td><td>Disordered worship; exchanging Creator for creature (Rom 1:23,25)</td><td>Biblical-theological</td></tr>
+              <tr><td class="pos">Disordered love</td><td><button class="t" data-h="incurvatus in se" data-d="The self curved in on itself. Loves that are good in themselves become sin when ranked wrongly — the disorder is in the hierarchy, not the object.">Amor incurvatus in se</button> — right loves ranked wrongly</td><td>Augustine, Luther</td></tr>
+              <tr><td class="pos">Concupiscence</td><td>Disordered desire, prior to any act of will</td><td>Trent (as tinder) / Reformed (as sin)</td></tr>
+              <tr><td class="pos">Relational rupture</td><td>Broken covenant and personal betrayal, not rule-breaking</td><td>Relational, covenantal</td></tr>
+              <tr><td class="pos">Structural evil</td><td>Sin embedded in institutions, powers, arrangements</td><td>Liberation theologies, Wink</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="fault">
+        <span class="lbl">Diagnostic</span>
+        <p>Press any definition with one question: <strong>does it explain sin Godward first?</strong> Ps 51:4 ("against You, You only") and <em>asebeia</em> preceding <em>adikia</em> in Rom 1:18 both push the vertical to primacy. Definitions that begin horizontally end in ethics without theology.</p>
+      </div>
+    </section>
+
+    <!-- ORIGINAL SIN -->
+    <section class="sec reveal" id="original">
+      <div class="sec-head"><span class="tag fall">04 · Transmission</span></div>
+      <h2>Original sin — the core battleground</h2>
+      <div class="body-content">
+        <p class="lede">Two distinguishable things travel under one name. Positions differ on whether one, both, or neither transmits.</p>
+        <ul>
+          <li><strong>Original guilt</strong> (<button class="t" data-h="reatus" data-d="Legal liability to punishment. Objective and forensic — it is a standing before the bar, not a feeling.">reatus</button>) — legal liability for Adam's sin.</li>
+          <li><strong>Original corruption</strong> (<button class="t" data-h="vitium / macula" data-d="The inherited moral condition and defilement of nature, as distinct from legal guilt. Traditions that deny inherited guilt may still strongly affirm inherited corruption.">vitium</button>) — the inherited moral condition.</li>
+        </ul>
+        <div class="scroll-x">
+          <table>
+            <thead><tr><th>Position</th><th>Guilt imputed?</th><th>Nature corrupted?</th><th>Mechanism</th><th>Result</th></tr></thead>
+            <tbody>
+              <tr><td class="pos">Pelagian</td><td class="no">No</td><td class="no">No</td><td>Adam as bad example</td><td>Sin by imitation; grace unnecessary in principle</td></tr>
+              <tr><td class="pos">Semi-Pelagian</td><td class="no">No</td><td>Weakened only</td><td>Wounded will</td><td>Man initiates, grace assists</td></tr>
+              <tr><td class="pos">Arminian</td><td class="no">No</td><td class="yes">Yes — total depravity</td><td>Inherited corruption + prevenient grace</td><td>Depravity real, universally counteracted</td></tr>
+              <tr><td class="pos">Wesleyan</td><td>Cancelled universally by the atonement</td><td class="yes">Yes</td><td>Corruption + prevenient grace</td><td>Ability restored to all</td></tr>
+              <tr><td class="pos">Roman Catholic</td><td class="yes">Yes — loss of original justice</td><td class="yes">Yes, but concupiscence not formally sin</td><td>Loss of the <button class="t" data-h="donum superadditum" data-d="The 'superadded gift' of original righteousness. On this model the fall strips a supernatural endowment, leaving nature intact but wounded — which is why nature and grace stay distinguishable.">donum superadditum</button></td><td>Baptism removes guilt; concupiscence remains as tinder</td></tr>
+              <tr><td class="pos">Eastern Orthodox</td><td class="no">Generally no</td><td class="yes">Yes — mortality and corruption</td><td><button class="t" data-h="ancestral sin" data-d="We inherit death rather than guilt, and we sin because we fear death. Sin is framed as a disease requiring healing more than a debt requiring payment.">Ancestral sin</button> — we inherit death, and sin from fear of it</td><td>Sin as disease more than debt</td></tr>
+              <tr><td class="pos">Reformed (federal)</td><td class="yes">Yes</td><td class="yes">Yes</td><td>Immediate imputation via covenant headship</td><td>Guilt and corruption both, immediately</td></tr>
+              <tr><td class="pos">Reformed (realist)</td><td class="yes">Yes</td><td class="yes">Yes</td><td>Seminal identity — we were <em>in</em> Adam (cf. Heb 7:9–10)</td><td>Guilt because we actually sinned in him</td></tr>
+              <tr><td class="pos">Placean (mediate)</td><td>Derivatively</td><td class="yes">Yes</td><td>Corruption inherited first; guilt imputed <em>because</em> corrupt</td><td>Guilt follows corruption</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Traducianism vs. creationism</strong> (origin of the soul) intersects here. Traducianism explains transmission easily; creationism explains it with difficulty but avoids dividing the soul.</p>
+      </div>
+
+      <div class="fault">
+        <span class="lbl">The exegetical crux · Rom 5:12</span>
+        <p><em>eph' ho pantes hemarton.</em> Render it "because all sinned" (personal acts) and you tend Arminian or Orthodox. Render it "in whom all sinned" (Vulgate <em>in quo</em>) and you tend realist. Read it as "death spread because all sinned — in Adam, representatively" and you get federalism.</p>
+        <p><strong>The structural stake:</strong> if Adam's sin is not imputed, the parallel logic of Christ's imputed righteousness weakens with it. Rom 5:12–21 is one argument, not two. This is the single verse on which the most doctrine hangs.</p>
+      </div>
+    </section>
+
+    <!-- DEPRAVITY -->
+    <section class="sec reveal" id="depravity">
+      <div class="sec-head"><span class="tag fall">05 · Extent</span></div>
+      <h2>Depravity and its effects</h2>
+      <div class="body-content">
+        <p class="lede"><strong>Total depravity is extensive, not intensive.</strong> Sin affects every faculty; it does not make every person maximally evil, nor destroy the <em>imago Dei</em>.</p>
+        <h3>By faculty</h3>
+        <ul>
+          <li><strong>Noetic</strong> — the mind's suppression of truth (Rom 1:18,21; 1 Cor 2:14; 2 Cor 4:4; Eph 4:17–18). This is where hamartiology feeds apologetics: presuppositionalism is an epistemology built on the noetic effects of sin.</li>
+          <li><strong>Volitional</strong> — bondage of the will. Not loss of <em>voluntariness</em> but loss of <em>liberty</em>: the sinner freely wills according to a nature that will not choose God. Cf. Edwards on <button class="t" data-h="natural vs. moral ability" data-d="Natural ability: the faculties and opportunity to act. Moral ability: the inclination to act. The sinner has natural ability to come to God and lacks moral ability — which is why inability does not excuse.">natural vs. moral ability</button>.</li>
+          <li><strong>Affectional</strong> — disordered loves; enmity toward God (Rom 8:7).</li>
+          <li><strong>Relational and social</strong> — violence, exploitation, alienation.</li>
+          <li><strong>Cosmic</strong> — creation subjected to futility (Rom 8:20–22).</li>
+        </ul>
+        <p><strong>Total inability</strong> is inability to do anything <em>savingly</em> pleasing to God apart from grace. Distinguish it from the capacity for civic good, which common grace preserves (Gen 20:6; Rom 2:14–15).</p>
+      </div>
+      <div class="fault">
+        <span class="lbl">Where this doctrine loses credibility</span>
+        <p>Collapse total inability into "unbelievers can do no good at all" and your doctrine cannot account for the observable decency of unbelievers — at which point the hearer discards the whole doctrine rather than the overstatement. Precision here is not pedantry; it is what keeps the doctrine survivable in public.</p>
+        <p><strong>Imago Dei after the fall</strong> — defaced (majority Protestant), lost as to <em>likeness</em> but retained as to <em>image</em> (patristic/Catholic), or effectively destroyed (some Lutheran). Gen 9:6 and Jas 3:9 constrain how far "destroyed" can be pushed.</p>
+      </div>
+    </section>
+
+    <!-- TAXONOMY -->
+    <section class="sec reveal" id="taxonomy">
+      <div class="sec-head"><span class="tag">06 · Expression</span></div>
+      <h2>Taxonomy of actual sin</h2>
+      <div class="body-content">
+        <ul>
+          <li><strong>Commission / omission</strong> — Jas 4:17</li>
+          <li><strong>Presumptuous / inadvertent</strong> — Num 15:22–31; Ps 19:12–13</li>
+          <li><strong>Secret / open</strong></li>
+          <li><strong>Sin against knowledge</strong> — degrees of culpability: Lk 12:47–48; Jn 9:41; 15:22</li>
+          <li><strong>Mortal / venial</strong> — Catholic (grave matter + full knowledge + deliberate consent). Reformed rejects the ontological category but affirms <strong>degrees of heinousness</strong> (WLC 150–151)</li>
+          <li><strong>Sin unto death</strong> — 1 Jn 5:16–17, referent disputed</li>
+          <li><strong>Blasphemy against the Spirit</strong> — Mk 3:28–30: settled attribution of the Spirit's work to Satan, not a repeatable isolated act</li>
+          <li><strong>Apostasy</strong> — Heb 6:4–6; 10:26–31, the warning-passage debate</li>
+        </ul>
+        <h3>Corporate and structural sin</h3>
+        <p>Solidarity in guilt: Achan (Josh 7), Daniel's confession (Dan 9), the "sin of the world" (Jn 1:29), the <em>archai</em> and <em>stoicheia</em> of Eph 6:12 and Col 2:15.</p>
+      </div>
+      <div class="fault">
+        <span class="lbl">Live question</span>
+        <p>Is "structural sin" a genuine theological category, or a metaphor for aggregated personal sin? Both overclaiming and dismissing distort — overclaim and culpability evaporates into systems; dismiss and Scripture's corporate confessions become unintelligible.</p>
+      </div>
+    </section>
+
+    <!-- LAW -->
+    <section class="sec reveal" id="law">
+      <div class="sec-head"><span class="tag">07 · Expression</span></div>
+      <h2>Sin and the law</h2>
+      <div class="body-content">
+        <p>Four Pauline functions:</p>
+        <ul>
+          <li><strong>Reveals</strong> sin — knowledge of sin comes through the law (Rom 3:20; 7:7)</li>
+          <li><strong>Provokes</strong> sin — the law occasions rebellion (Rom 7:8–11)</li>
+          <li><strong>Reckons</strong> sin — sin exists without law but is not counted the same way (Rom 5:13)</li>
+          <li><strong>Condemns</strong>, and drives to Christ (Gal 3:19–24)</li>
+        </ul>
+      </div>
+      <div class="fault">
+        <span class="lbl">Note the asymmetry</span>
+        <p>Sin <strong>precedes</strong> law — death reigned from Adam to Moses. Law is therefore not the ground of sin's existence, only of its formal reckoning. This is precisely why a purely legal definition of sin cannot stand alone.</p>
+      </div>
+    </section>
+
+    <!-- CONSEQUENCES -->
+    <section class="sec reveal" id="consequences">
+      <div class="sec-head"><span class="tag fall">08 · Consequence</span></div>
+      <h2>Consequences of sin</h2>
+      <div class="body-content">
+        <div class="scroll-x">
+          <table>
+            <thead><tr><th>Category</th><th>Content</th></tr></thead>
+            <tbody>
+              <tr><td class="pos">Guilt (reatus)</td><td>Objective liability to punishment — forensic, not felt</td></tr>
+              <tr><td class="pos">Pollution (macula)</td><td>Moral defilement of nature</td></tr>
+              <tr><td class="pos">Death</td><td>Physical, spiritual (Eph 2:1), eternal (Rev 20:14)</td></tr>
+              <tr><td class="pos">Wrath</td><td>Settled, holy opposition — judicial disposition, not passion (Rom 1:18)</td></tr>
+              <tr><td class="pos">Alienation</td><td>From God, self, neighbour, creation — the four ruptures of Gen 3</td></tr>
+              <tr><td class="pos">Bondage</td><td>To sin (Jn 8:34), Satan (Eph 2:2), death (Heb 2:14–15)</td></tr>
+              <tr><td class="pos">Judicial hardening</td><td>God gives over — Rom 1:24,26,28; Ex 9:12; Rom 9:18</td></tr>
+              <tr><td class="pos">Cosmic curse</td><td>Ground cursed, creation groaning — Gen 3:17–19; Rom 8:20–22</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="fault">
+        <span class="lbl">Pastoral precision</span>
+        <p>Distinguish <strong>guilt</strong> from guilt <em>feelings</em>, and <strong>shame</strong> from guilt. Most contemporary pastoral confusion comes from collapsing these. Honour–shame and guilt cultures read the same texts asymmetrically, and both registers are in Scripture (Gen 2:25; 3:7,10).</p>
+      </div>
+    </section>
+
+    <!-- BELIEVER -->
+    <section class="sec reveal" id="believer">
+      <div class="sec-head"><span class="tag grace">09 · Under grace</span></div>
+      <h2>Sin in the believer</h2>
+      <div class="body-content">
+        <p class="lede">The most pastorally consequential section. Does the believer still have a sin nature?</p>
+        <div class="scroll-x">
+          <table>
+            <thead><tr><th>Model</th><th>Claim</th><th>Reading of Rom 6–7</th><th>Weakness</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="pos">Two natures</td>
+                <td>The old nature remains intact alongside a new nature; the believer is a battleground between two entities</td>
+                <td>Rom 7 = normal Christian experience of two natures</td>
+                <td>Ontological dualism inside one person; obscures who "I" am; can excuse sin as "not really me"</td>
+              </tr>
+              <tr>
+                <td class="pos">One renewed person</td>
+                <td>One person, definitively renewed, with <strong>remaining corruption</strong> — not a second self</td>
+                <td>Rom 6 = definitive break; Rom 7 = the renewed man's conflict with indwelling sin</td>
+                <td>Must avoid implying sin is peripheral or easily conquered</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Related disputes</h3>
+        <ul>
+          <li><strong>Rom 7:14–25</strong> — regenerate or unregenerate "I"? (Later Augustine and the Reformed: regenerate. Much patristic and modern scholarship: pre-Christian or rhetorical <em>ego</em>.)</li>
+          <li><strong>Definitive vs. progressive sanctification</strong> — "already dead to sin" (Rom 6) against "put to death" (Col 3:5).</li>
+          <li><strong>Perfectionism</strong> — Wesleyan entire sanctification, Keswick "victorious life," and the Reformed rejection of both. Test each against 1 Jn 1:8–10.</li>
+        </ul>
+      </div>
+      <div class="fault">
+        <span class="lbl">The concupiscence split</span>
+        <p>Trent: the inclination remains in the baptized but "is not truly and properly sin." Reformed and Lutheran: disordered desire <em>is</em> sin even unconsented — which is why Rom 7:7 makes coveting the test case.</p>
+        <p>This single disagreement generates most of the Catholic–Protestant divergence on <strong>assurance, confession, and perfection</strong>. It is a smaller-looking question than imputation and nearly as load-bearing.</p>
+      </div>
+    </section>
+
+    <!-- PROVIDENCE -->
+    <section class="sec reveal" id="providence">
+      <div class="sec-head"><span class="tag">10 · Theology proper</span></div>
+      <h2>God's relation to sin</h2>
+      <div class="body-content">
+        <p class="lede">The hardest section. Handle with precision or not at all.</p>
+        <ul>
+          <li><strong>God is not the author of sin</strong> — WCF 3.1; Jas 1:13; 1 Jn 1:5. Non-negotiable boundary.</li>
+          <li><strong>Yet sin is not outside His decree</strong> — Acts 2:23; 4:27–28; Gen 50:20.</li>
+        </ul>
+        <h3>Mechanisms proposed</h3>
+        <p>Permissive decree · primary and secondary causation (God ordains the act as <em>event</em>, the creature supplies the <em>moral quality</em>) · <button class="t" data-h="concursus" data-d="Divine concurrence: God and the creature are both fully active in the same act, at different levels of causality — not 50/50 cooperation but two orders of causation.">concurrence</button> · Molinist middle knowledge · Arminian simple foreknowledge · open theism's denial of exhaustive foreknowledge.</p>
+        <h3>Theodicies</h3>
+        <p>Free-will defence (Plantinga) · soul-making (Hick, Irenaean) · greater-good and <em>felix culpa</em> · skeptical theism · cruciform theodicy.</p>
+        <p>Related: <strong>supralapsarian vs. infralapsarian</strong> ordering of the decrees — where the fall sits relative to election.</p>
+      </div>
+      <div class="fault">
+        <span class="lbl">Discipline required</span>
+        <p>The confessional language is deliberately apophatic: "yet so as thereby neither is God the author of sin." It asserts two truths and refuses to resolve the mechanism.</p>
+        <p>Systems that <em>fully</em> resolve the tension almost always do so by quietly sacrificing either divine sovereignty or divine holiness. Naming a mystery is not a failure of rigour. Pretending to have dissolved it is.</p>
+      </div>
+    </section>
+
+    <!-- CHRIST -->
+    <section class="sec reveal" id="christ">
+      <div class="sec-head"><span class="tag grace">11 · Under grace</span></div>
+      <h2>Christ and sin</h2>
+      <div class="body-content">
+        <ul>
+          <li><strong>Sinlessness</strong> — 2 Cor 5:21; Heb 4:15; 1 Pet 2:22. Universally affirmed.</li>
+          <li><strong>Impeccability vs. peccability</strong> — <em>non posse peccare</em> (unable to sin, given the hypostatic union) against <em>posse non peccare</em> (able not to sin, preserving genuine temptation).</li>
+        </ul>
+        <h3>The three registers of the atonement</h3>
+        <p>A useful completeness test for any atonement theory:</p>
+        <ul>
+          <li><strong>Guilt</strong> → penal substitution, satisfaction, justification</li>
+          <li><strong>Power</strong> → <em>Christus Victor</em>, union with Christ, regeneration</li>
+          <li><strong>Pollution and presence</strong> → sacrificial cleansing, sanctification, glorification</li>
+        </ul>
+      </div>
+      <div class="fault">
+        <span class="lbl">Two tests</span>
+        <p>Does impeccability empty Heb 4:15 of force? If Christ could not have sinned, in what sense was he tempted as we are?</p>
+        <p>And: a theory that answers only one of the three registers leaves the doctrine of sin unanswered. Most popular atonement preaching answers guilt only — which is exactly why so many believers are forgiven and still enslaved.</p>
+      </div>
+    </section>
+
+    <!-- PRESSURE -->
+    <section class="sec reveal" id="pressure">
+      <div class="sec-head"><span class="tag">12 · Frontier</span></div>
+      <h2>Contemporary pressure points</h2>
+      <div class="body-content">
+        <ul>
+          <li><strong>Historical Adam and evolutionary biology</strong> — monogenism vs. polygenism; whether original sin survives without a historical fall (Schneider, Enns vs. Madueme, Reeves, Collins). The most consequential live front: positions taken here silently rewrite the whole of §04.</li>
+          <li><strong>Therapeutic reduction</strong> — sin recategorised as brokenness, trauma, or dysfunction. Contains real insight — sin does enslave, and the Orthodox disease model has ancient warrant — but collapses if culpability disappears. <em>Test: can your account still say</em> guilty?</li>
+          <li><strong>Liberation and structural readings</strong> — sin as systemic injustice. <em>Test: can your account still say</em> personal?</li>
+          <li><strong>Psychology, compulsion and addiction</strong> — diminished responsibility. Degrees of culpability were always in the tradition (Num 15; Lk 12:47–48), so this is not a novel problem, only a sharpened one.</li>
+          <li><strong>Creation care</strong> — sin against creation as a category.</li>
+        </ul>
+      </div>
+      <div class="fault">
+        <span class="lbl">The honest position</span>
+        <p>Each of these pressures is applied by people who have noticed something true. The weak response is to treat the insight as an attack. The strong response is to absorb the insight and refuse the reduction — which requires knowing exactly which load-bearing claim you cannot give up.</p>
+      </div>
+    </section>
+
+    <!-- LOCATOR -->
+    <section class="sec reveal no-fault" id="locate">
+      <div class="sec-head"><span class="tag grace">13 · Signature</span></div>
+      <h2>Locate your framework</h2>
+      <p class="lede">Four decisions determine nearly everything else. Answer them and the rest follows almost mechanically — most people absorb a hamartiology by tradition without ever locating themselves on these axes, then discover their soteriology contradicts their anthropology.</p>
+
+      <div class="loc-grid" id="qs">
+        <div class="q" data-q="q1">
+          <span class="qn">Decision 01 · Transmission</span>
+          <h4>Is Adam's guilt imputed, or only his corruption inherited?</h4>
+          <button class="opt" data-v="imputed" aria-pressed="false">Guilt imputed — Adam acts as head</button>
+          <button class="opt" data-v="corruption" aria-pressed="false">Corruption inherited; guilt not imputed</button>
+          <button class="opt" data-v="neither" aria-pressed="false">Neither — sin by imitation</button>
+        </div>
+
+        <div class="q" data-q="q2">
+          <span class="qn">Decision 02 · Ability</span>
+          <h4>Is fallen inability moral or natural — and is it universally relieved?</h4>
+          <button class="opt" data-v="total" aria-pressed="false">Total moral inability; requires regeneration</button>
+          <button class="opt" data-v="prevenient" aria-pressed="false">Real, but relieved in all by prevenient grace</button>
+          <button class="opt" data-v="intact" aria-pressed="false">Ability substantially intact</button>
+        </div>
+
+        <div class="q" data-q="q3">
+          <span class="qn">Decision 03 · Desire</span>
+          <h4>Is disordered desire itself sin, or only its consent?</h4>
+          <button class="opt" data-v="desire" aria-pressed="false">Desire itself is sin (Rom 7:7)</button>
+          <button class="opt" data-v="consent" aria-pressed="false">Only consented desire is sin</button>
+        </div>
+
+        <div class="q" data-q="q4">
+          <span class="qn">Decision 04 · History</span>
+          <h4>Is a historical fall necessary to the doctrine?</h4>
+          <button class="opt" data-v="necessary" aria-pressed="false">Necessary — the doctrine requires an event</button>
+          <button class="opt" data-v="optional" aria-pressed="false">Not necessary — a universal description</button>
+        </div>
+      </div>
+
+      <div id="readout" aria-live="polite">
+        <p class="placeholder">Answer the four decisions above. The readout names where your answers converge, what they commit you to, and — more usefully — where they strain against each other.</p>
+      </div>
+      <button class="reset" id="resetBtn" hidden>Clear answers</button>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="sec reveal no-fault" id="sources">
+      <div class="sec-head"><span class="tag">14 · Apparatus</span></div>
+      <h2>Primary sources</h2>
+      <ul class="src">
+        <li><b>Augustine</b> — On Nature and Grace; Against Julian; Confessions II (the pear theft as case study in motiveless sin)</li>
+        <li><b>Anselm</b> — De Conceptu Virginali</li>
+        <li><b>Aquinas</b> — ST I–II, qq. 71–89</li>
+        <li><b>Luther</b> — The Bondage of the Will</li>
+        <li><b>Calvin</b> — Institutes II.1–5</li>
+        <li><b>Owen</b> — Indwelling Sin; The Mortification of Sin</li>
+        <li><b>Edwards</b> — Original Sin; Freedom of the Will</li>
+        <li><b>Confessional</b> — WCF 6; WLC 21–29, 149–152; Canons of Dort III/IV; Trent Session V; Augsburg II</li>
+        <li><b>Bavinck</b> — Reformed Dogmatics, vol. 3</li>
+        <li><b>Berkouwer</b> — Sin</li>
+        <li><b>R. Niebuhr</b> — Nature and Destiny of Man, vol. 1</li>
+        <li><b>C. Plantinga</b> — Not the Way It's Supposed to Be</li>
+        <li><b>Blocher</b> — Original Sin</li>
+        <li><b>Madueme &amp; Reeves, eds.</b> — Adam, the Fall, and Original Sin</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  A comparative map, not a confession. Dotted terms carry definitions — tap them.
+</footer>
+
+<div id="tip" role="tooltip"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- smooth jump chips ---------- */
+  document.querySelectorAll('[data-jump]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var el = document.getElementById(b.dataset.jump);
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  /* ---------- fault-lines-only mode ---------- */
+  var faultBtn = document.getElementById('faultBtn');
+  faultBtn.addEventListener('click', function(){
+    var on = faultBtn.getAttribute('aria-pressed') === 'true';
+    faultBtn.setAttribute('aria-pressed', String(!on));
+    document.body.classList.toggle('faults', !on);
+    faultBtn.textContent = !on ? 'Show full map' : 'Fault lines only';
+  });
+
+  /* ---------- glossary tooltips ---------- */
+  var tip = document.getElementById('tip');
+  var openBtn = null;
+
+  function closeTip(){
+    tip.style.display = 'none';
+    openBtn = null;
+  }
+  function showTip(btn){
+    tip.innerHTML = '<span class="h">' + btn.dataset.h + '</span>' + btn.dataset.d;
+    tip.style.display = 'block';
+    tip.style.left = '0px';
+    tip.style.top = '0px';
+    var r = btn.getBoundingClientRect();
+    var tw = tip.offsetWidth;
+    var left = r.left + window.scrollX;
+    var maxLeft = window.scrollX + document.documentElement.clientWidth - tw - 12;
+    if(left > maxLeft) left = maxLeft;
+    if(left < window.scrollX + 10) left = window.scrollX + 10;
+    tip.style.left = left + 'px';
+    tip.style.top = (r.bottom + window.scrollY + 8) + 'px';
+    openBtn = btn;
+  }
+
+  document.querySelectorAll('button.t').forEach(function(btn){
+    btn.setAttribute('type','button');
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(openBtn === btn){ closeTip(); return; }
+      showTip(btn);
+    });
+  });
+  document.addEventListener('click', closeTip);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeTip(); });
+  window.addEventListener('scroll', function(){ if(openBtn) closeTip(); }, {passive:true});
+
+  /* ---------- scrollspy ---------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var secs  = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  if('IntersectionObserver' in window){
+    var spy = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(!en.isIntersecting) return;
+        links.forEach(function(a){ a.classList.remove('on'); });
+        var i = secs.indexOf(en.target);
+        if(i > -1) links[i].classList.add('on');
+      });
+    }, {rootMargin:'-15% 0px -70% 0px'});
+    secs.forEach(function(s){ if(s) spy.observe(s); });
+
+    /* reveal on scroll */
+    if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      var rev = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if(en.isIntersecting){ en.target.classList.add('in'); rev.unobserve(en.target); }
+        });
+      }, {rootMargin:'0px 0px -8% 0px'});
+      document.querySelectorAll('.reveal').forEach(function(el){ rev.observe(el); });
+    } else {
+      document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+    }
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* ---------- framework locator ---------- */
+  var answers = {};
+  var readout = document.getElementById('readout');
+  var resetBtn = document.getElementById('resetBtn');
+
+  document.querySelectorAll('#qs .q').forEach(function(q){
+    var key = q.dataset.q;
+    q.querySelectorAll('.opt').forEach(function(opt){
+      opt.setAttribute('type','button');
+      opt.addEventListener('click', function(){
+        q.querySelectorAll('.opt').forEach(function(o){ o.setAttribute('aria-pressed','false'); });
+        opt.setAttribute('aria-pressed','true');
+        answers[key] = opt.dataset.v;
+        render();
+      });
+    });
+  });
+
+  resetBtn.addEventListener('click', function(){
+    answers = {};
+    document.querySelectorAll('#qs .opt').forEach(function(o){ o.setAttribute('aria-pressed','false'); });
+    render();
+  });
+
+  function cluster(a){
+    if(a.q1 === 'neither' || a.q2 === 'intact') return {
+      name:'Pelagian territory',
+      body:'Grace becomes example and assistance rather than rescue. This is the one position the church condemned outright (Carthage 418, Orange 529), and it is worth knowing that it is usually arrived at by accident — through a high view of human responsibility rather than a low view of God.',
+      ent:[
+        'The cross demonstrates and enables; it does not accomplish.',
+        'Infant baptism loses its traditional rationale.',
+        'Assurance rests on performance, since nothing was decisively secured for you.'
+      ]
+    };
+    if(a.q1 === 'imputed' && a.q2 === 'total') return {
+      name:'Augustinian–Reformed',
+      body:'Federal or realist headship, monergistic regeneration. The most internally symmetrical system: what Adam did to you, Christ undoes for you, by the same imputational logic.',
+      ent:[
+        'Justification by imputed righteousness follows by the symmetry of Rom 5:12–21.',
+        'Regeneration must precede faith — the dead do not cooperate.',
+        'Election is unconditional; perseverance is God-secured.',
+        'No perfectionism this side of glory; remaining corruption is real in the believer.'
+      ]
+    };
+    if(a.q1 === 'corruption' && a.q2 === 'prevenient') return {
+      name:'Wesleyan–Arminian',
+      body:'Depravity affirmed at full strength, then universally counteracted. The system stands or falls on prevenient grace doing genuine work without becoming irresistible.',
+      ent:[
+        'Synergism: grace initiates, the will genuinely responds and can refuse.',
+        'Election conditional on foreseen faith; assurance rests on present relationship.',
+        'Entire sanctification becomes at least conceivable — the Reformed objection is 1 Jn 1:8.',
+        'You owe an account of why prevenient grace is not simply universal semi-Pelagianism with better manners.'
+      ]
+    };
+    if(a.q1 === 'corruption' && a.q2 === 'total') return {
+      name:'Eastern / ancestral-sin type',
+      body:'Inherited mortality and corruption without inherited guilt. Sin is framed as disease requiring healing rather than debt requiring payment — coherent, ancient, and genuinely different from the Western options rather than a softening of them.',
+      ent:[
+        'Atonement weighted toward Christus Victor, recapitulation, and theosis over penal satisfaction.',
+        'Infants are not born guilty, though they are born mortal.',
+        'Salvation reads as therapeutic and participatory rather than primarily forensic.',
+        'You must still explain why the condition is universal and unescapable if no guilt transmits.'
+      ]
+    };
+    if(a.q1 === 'imputed' && a.q2 === 'prevenient') return {
+      name:'Wesleyan hybrid (guilt imputed, then cancelled)',
+      body:'Adam\'s guilt is imputed but universally remitted by the atonement, and inability is universally relieved by prevenient grace. This is a real historical position, not a muddle — but it is a two-stage system, and both stages need defending.',
+      ent:[
+        'The atonement does something for every person prior to and apart from faith.',
+        'No one is finally condemned for Adam\'s sin, only for their own.',
+        'Synergism in conversion, with depravity taken seriously up front.'
+      ]
+    };
+    return {
+      name:'Mixed position',
+      body:'Your answers do not sit inside one historic system. That is not automatically a defect — but an eclectic hamartiology has to be argued for deliberately rather than inherited by default, because the systems it borrows from are internally connected.',
+      ent:[
+        'Identify which single claim you would not surrender under pressure; that is your actual centre.',
+        'Then check whether the remaining commitments are consistent with it or merely inherited.'
+      ]
+    };
+  }
+
+  function strains(a){
+    var out = [];
+    if(a.q1 === 'imputed' && a.q4 === 'optional'){
+      out.push('You hold that Adam\'s guilt is imputed, but that a historical fall is not necessary. Imputation requires a transmitter and a real act to transmit. Without a historical Adam, on what basis is guilt reckoned to you — and to whom does the federal head belong? This is the sharpest tension available in the whole doctrine, and it cannot be left implicit.');
+    }
+    if(a.q1 === 'corruption' && a.q2 === 'total'){
+      out.push('You deny inherited guilt but affirm unrelieved total inability. You then owe an account of why God holds people liable for a condition they did not incur. The Orthodox answer is available — sin as inherited mortality and disease, with culpability attaching to personal acts of sin rather than to the condition. If you do not take that route, this combination is exposed.');
+    }
+    if(a.q3 === 'consent' && a.q1 === 'imputed'){
+      out.push('You hold imputed guilt but define sin as requiring consent. This is close to the Tridentine position on concupiscence sitting on a Reformed foundation. Watch the consequence: if unconsented disordered desire is not sin, Rom 7:7 loses its force, and the standard by which you are convicted quietly lowers — which changes your doctrine of assurance more than it changes your doctrine of sin.');
+    }
+    if(a.q3 === 'desire' && a.q2 === 'prevenient'){
+      out.push('You set the standard at the level of desire itself while holding that grace has universally restored ability. The combination raises the bar and the expectation simultaneously. Be careful this does not resolve pastorally into perpetual guilt with no doctrine of remaining corruption to explain it.');
+    }
+    if(a.q4 === 'optional' && a.q2 === 'total'){
+      out.push('Total inability without a historical fall means universal depravity has no historical cause — sin becomes a permanent feature of created human nature. That comes uncomfortably close to making God the author of the condition He judges. Whatever you conclude, this is the objection to answer first.');
+    }
+    return out;
+  }
+
+  function render(){
+    var n = Object.keys(answers).length;
+    resetBtn.hidden = n === 0;
+    if(n < 4){
+      readout.innerHTML = '<p class="placeholder">' + n + ' of 4 answered. The readout names where your answers converge, what they commit you to, and where they strain against each other.</p>';
+      return;
+    }
+    var c = cluster(answers);
+    var s = strains(answers);
+    var html = '<h3>Convergence</h3>' +
+               '<p class="cluster">' + c.name + '</p>' +
+               '<p>' + c.body + '</p>' +
+               '<h3>What this commits you to</h3><ul class="entail">' +
+               c.ent.map(function(e){ return '<li>' + e + '</li>'; }).join('') +
+               '</ul>';
+    if(s.length){
+      html += s.map(function(t){
+        return '<div class="strain"><span class="lbl">Strain in your position</span><p>' + t + '</p></div>';
+      }).join('');
+    } else {
+      html += '<div class="strain" style="border-left-color:var(--ochre);background:rgba(212,168,44,.07)">' +
+              '<span class="lbl" style="color:var(--ochre)">No internal strain detected</span>' +
+              '<p>Your four answers are mutually consistent. That is a statement about coherence only — a coherent system can still be wrong, and the next question is whether each claim survives the exegesis rather than whether it fits the others.</p></div>';
+    }
+    readout.innerHTML = html;
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
