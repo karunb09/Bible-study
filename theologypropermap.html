@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Doctrine of God — A Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0D1120;
+  --ground:#111731;
+  --panel:#18203E;
+  --panel-2:#20294C;
+  --line:#2B3560;
+  --bone:#EAE6D9;
+  --sage:#93A0BE;
+  --ochre:#D2A93A;
+  --oxblood:#BE5A4C;
+
+  --display:"Fraunces",Georgia,serif;
+  --body:"Newsreader",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+
+  --pad:clamp(1.1rem,4vw,2.75rem);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--bone);
+  font-family:var(--body);
+  font-size:clamp(1rem,0.96rem + 0.2vw,1.075rem);
+  line-height:1.62;
+  font-weight:300;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--ochre);text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--ochre);outline-offset:3px;border-radius:2px}
+
+.eyebrow{
+  font-family:var(--mono);
+  font-size:.62rem;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--sage);
+}
+
+/* ---------- hero ---------- */
+.hero{
+  padding:clamp(2.5rem,8vw,5rem) var(--pad) clamp(2rem,5vw,3.5rem);
+  border-bottom:1px solid var(--line);
+  background:
+    radial-gradient(120% 90% at 8% 0%, #1B2442 0%, rgba(17,23,49,0) 62%),
+    var(--ground);
+}
+.hero h1{
+  font-family:var(--display);
+  font-weight:300;
+  font-size:clamp(2.9rem,11vw,6.4rem);
+  line-height:.92;
+  letter-spacing:-.025em;
+  margin:.6rem 0 0;
+}
+.hero h1 em{
+  font-style:normal;
+  display:block;
+  color:var(--ochre);
+  font-weight:500;
+}
+.thesis{
+  margin:clamp(1.4rem,4vw,2rem) 0 0;
+  max-width:34ch;
+  font-size:clamp(1.05rem,1rem + .5vw,1.3rem);
+  color:var(--bone);
+  line-height:1.45;
+}
+.thesis b{font-weight:600;color:var(--ochre)}
+.subnote{margin-top:.9rem;max-width:52ch;color:var(--sage);font-size:.95rem}
+
+/* ---------- four distinctions strip ---------- */
+.states{
+  margin-top:clamp(2rem,6vw,3.2rem);
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--line);
+  border-radius:3px;
+  overflow:hidden;
+}
+.state{
+  padding:.95rem .8rem 1.05rem;
+  border-right:1px solid var(--line);
+  background:var(--panel);
+}
+.state:last-child{border-right:0}
+.state .n{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--sage);display:block;margin-bottom:.45rem;
+}
+.state .lat{
+  font-family:var(--mono);font-size:.78rem;line-height:1.35;color:var(--bone);
+  display:block;
+}
+.state .en{display:block;margin-top:.4rem;font-size:.82rem;color:var(--sage);line-height:1.35}
+.state.key{background:linear-gradient(180deg,#2A2410,#231E0F);border-top:2px solid var(--ochre)}
+.state.key .lat{color:var(--ochre);font-weight:500}
+@media(max-width:640px){
+  .states{grid-template-columns:repeat(2,1fr)}
+  .state:nth-child(2){border-right:0}
+  .state:nth-child(1),.state:nth-child(2){border-bottom:1px solid var(--line)}
+}
+
+/* ---------- controls ---------- */
+.controls{
+  position:sticky;top:0;z-index:40;
+  background:rgba(13,17,32,.94);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.controls-inner{
+  display:flex;gap:.6rem;align-items:center;
+  padding:.55rem var(--pad);
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.controls-inner::-webkit-scrollbar{display:none}
+.chip{
+  flex:0 0 auto;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--sage);background:transparent;border:1px solid var(--line);
+  padding:.4rem .62rem;border-radius:2px;cursor:pointer;
+  transition:color .18s,border-color .18s,background .18s;
+  white-space:nowrap;
+}
+.chip:hover{color:var(--bone);border-color:var(--sage)}
+.chip.active{color:var(--ink);background:var(--ochre);border-color:var(--ochre);font-weight:500}
+.chip.toggle[aria-pressed="true"]{background:var(--oxblood);border-color:var(--oxblood);color:#fff}
+
+/* ---------- layout ---------- */
+.wrap{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  max-width:1180px;margin:0 auto;
+}
+@media(min-width:960px){
+  .wrap{grid-template-columns:210px minmax(0,1fr);gap:clamp(2rem,4vw,4rem)}
+}
+.toc{display:none}
+@media(min-width:960px){
+  .toc{
+    display:block;position:sticky;top:3.2rem;align-self:start;
+    padding:2.6rem 0 3rem 1.5rem;max-height:calc(100vh - 4rem);overflow-y:auto;
+    scrollbar-width:thin;
+  }
+  .toc ol{list-style:none;margin:0;padding:0}
+  .toc a{
+    display:block;padding:.3rem 0 .3rem .7rem;
+    border-left:1px solid var(--line);
+    color:var(--sage);text-decoration:none;font-size:.83rem;line-height:1.35;
+    transition:color .18s,border-color .18s;
+  }
+  .toc a:hover{color:var(--bone)}
+  .toc a.on{color:var(--ochre);border-left-color:var(--ochre)}
+  .toc .grp{
+    font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;
+    color:#5C688A;margin:1.3rem 0 .4rem .7rem;
+  }
+  .toc .grp:first-child{margin-top:0}
+}
+
+main{padding:clamp(2rem,5vw,3.4rem) var(--pad) 5rem;min-width:0}
+@media(min-width:960px){main{padding-left:0;padding-right:clamp(1rem,3vw,2rem)}}
+
+/* ---------- sections ---------- */
+.sec{padding:clamp(2rem,5vw,3rem) 0;border-top:1px solid var(--line)}
+.sec:first-child{border-top:0;padding-top:0}
+.sec-head{display:flex;flex-wrap:wrap;gap:.55rem;align-items:baseline;margin-bottom:.3rem}
+.sec h2{
+  font-family:var(--display);font-weight:400;
+  font-size:clamp(1.6rem,1.3rem + 1.4vw,2.35rem);
+  line-height:1.08;letter-spacing:-.015em;margin:.15rem 0 .7rem;width:100%;
+}
+.tag{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--sage);border:1px solid var(--line);padding:.22rem .45rem;border-radius:2px;
+}
+.tag.fall{color:var(--oxblood);border-color:#4A302C}
+.tag.grace{color:var(--ochre);border-color:#4A3E1E}
+
+p{margin:0 0 1rem;max-width:66ch}
+.lede{color:var(--bone);font-size:1.06em}
+h3{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--sage);font-weight:500;margin:2rem 0 .75rem;
+}
+ul{margin:0 0 1.1rem;padding-left:1.1rem;max-width:66ch}
+li{margin-bottom:.5rem}
+li::marker{color:var(--sage)}
+strong{font-weight:600;color:#F5F2E8}
+
+/* ---------- fault lines ---------- */
+.fault{
+  border-left:2px solid var(--oxblood);
+  background:linear-gradient(90deg,rgba(190,90,76,.09),rgba(190,90,76,0) 70%);
+  padding:.9rem 1rem .95rem;margin:1.4rem 0;max-width:68ch;border-radius:0 3px 3px 0;
+}
+.fault .lbl{
+  display:block;font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--oxblood);margin-bottom:.45rem;
+}
+.fault p{margin:0;max-width:none;font-size:.97rem}
+.fault p + p{margin-top:.6rem}
+
+/* ---------- tables ---------- */
+.scroll-x{overflow-x:auto;margin:1.1rem 0 1.4rem;border:1px solid var(--line);border-radius:3px}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.9rem}
+th,td{padding:.62rem .75rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+thead th{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sage);font-weight:500;background:var(--panel);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:rgba(255,255,255,.022)}
+td.term-cell{font-family:var(--mono);font-size:.8rem;color:var(--ochre);white-space:nowrap}
+td.pos{font-weight:600;color:#F5F2E8;white-space:nowrap}
+.yes{color:var(--ochre)}
+.no{color:var(--oxblood)}
+
+/* ---------- glossary term ---------- */
+button.t{
+  font:inherit;color:inherit;background:none;border:0;padding:0;cursor:help;
+  border-bottom:1px dotted var(--ochre);
+}
+button.t:hover{color:var(--ochre)}
+#tip{
+  position:absolute;z-index:80;max-width:min(20rem,86vw);
+  background:var(--panel-2);border:1px solid var(--line);border-left:2px solid var(--ochre);
+  padding:.65rem .8rem;border-radius:2px;font-size:.86rem;line-height:1.45;
+  box-shadow:0 12px 30px rgba(0,0,0,.45);display:none;
+}
+#tip .h{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--ochre);display:block;margin-bottom:.3rem}
+
+/* ---------- locator (signature) ---------- */
+#locate{border-top:1px solid var(--line)}
+.loc-grid{display:grid;gap:1rem;margin-top:1.4rem}
+@media(min-width:760px){.loc-grid{grid-template-columns:1fr 1fr}}
+.q{border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:1rem}
+.q .qn{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--sage);display:block;margin-bottom:.4rem;
+}
+.q h4{margin:0 0 .8rem;font-family:var(--body);font-weight:600;font-size:1.02rem;line-height:1.35}
+.opt{
+  display:block;width:100%;text-align:left;font:inherit;font-size:.9rem;line-height:1.4;
+  color:var(--bone);background:transparent;border:1px solid var(--line);
+  padding:.55rem .7rem;border-radius:2px;margin-bottom:.4rem;cursor:pointer;
+  transition:border-color .16s,background .16s;
+}
+.opt:hover{border-color:var(--sage)}
+.opt[aria-pressed="true"]{border-color:var(--ochre);background:rgba(210,169,58,.11)}
+.opt[aria-pressed="true"]::before{content:"▸ ";color:var(--ochre)}
+
+#readout{
+  margin-top:1.4rem;border:1px solid var(--line);border-top:2px solid var(--ochre);
+  background:var(--panel);border-radius:3px;padding:clamp(1rem,3vw,1.6rem);
+}
+#readout .placeholder{color:var(--sage);margin:0;font-size:.95rem}
+#readout h3{margin-top:0}
+.cluster{
+  font-family:var(--display);font-weight:500;font-size:clamp(1.3rem,1.1rem + 1vw,1.8rem);
+  line-height:1.15;margin:0 0 .5rem;color:var(--ochre);
+}
+.entail{margin:0 0 .3rem;padding-left:1.1rem}
+.strain{
+  border-left:2px solid var(--oxblood);padding:.7rem .85rem;margin-top:1rem;
+  background:rgba(190,90,76,.08);border-radius:0 3px 3px 0;
+}
+.strain .lbl{
+  display:block;font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--oxblood);margin-bottom:.35rem;
+}
+.strain p{margin:0;font-size:.93rem;max-width:none}
+.reset{
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;
+  background:none;border:1px solid var(--line);color:var(--sage);
+  padding:.35rem .6rem;border-radius:2px;cursor:pointer;margin-top:1rem;
+}
+.reset:hover{color:var(--bone);border-color:var(--sage)}
+
+/* ---------- sources ---------- */
+.src{columns:2;column-gap:2.5rem;font-size:.9rem}
+@media(max-width:700px){.src{columns:1}}
+.src li{break-inside:avoid;color:var(--sage)}
+.src li b{color:var(--bone);font-weight:600}
+
+footer{
+  border-top:1px solid var(--line);padding:1.6rem var(--pad) 2.6rem;
+  color:#5C688A;font-size:.8rem;max-width:1180px;margin:0 auto;
+}
+footer a{color:var(--sage)}
+
+/* ---------- fault-line-only mode ---------- */
+body.faults .body-content{display:none}
+body.faults .sec.no-fault{display:none}
+body.faults .sec h2{margin-bottom:.4rem}
+
+/* ---------- motion ---------- */
+.sec{opacity:1}
+@media(prefers-reduced-motion:no-preference){
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="eyebrow">Theology proper · a working map</span>
+  <h1>The Doctrine<em>of God</em></h1>
+  <p class="thesis">Every doctrine in the system inherits its shape from this one. Bend the doctrine of <b>God</b> and everything downstream bends with it.</p>
+  <p class="subnote">Theology proper is the load-bearing wall of the house. This map is comparative rather than confessional: it takes the classical consensus as its baseline — because for most of church history it was everyone's baseline — and maps the modern revisions against it, with the cost of each move priced.</p>
+
+  <div class="states" aria-label="Four distinctions that structure the doctrine">
+    <div class="state key">
+      <span class="n">The first divide</span>
+      <span class="lat">Creator /<br>creatura</span>
+      <span class="en">Everything that is not God was made by him</span>
+    </div>
+    <div class="state">
+      <span class="n">Knowledge</span>
+      <span class="lat">archetypa /<br>ectypa</span>
+      <span class="en">God's self-knowledge / what he reveals of it</span>
+    </div>
+    <div class="state">
+      <span class="n">Reach</span>
+      <span class="lat">apprehendere,<br>non comprehendere</span>
+      <span class="en">Truly known, never exhausted</span>
+    </div>
+    <div class="state">
+      <span class="n">Address</span>
+      <span class="lat">in se /<br>ad extra</span>
+      <span class="en">God in himself / God toward us</span>
+    </div>
+  </div>
+</header>
+
+<nav class="controls" aria-label="Section navigation and view controls">
+  <div class="controls-inner">
+    <button class="chip toggle" id="faultBtn" aria-pressed="false">Fault lines only</button>
+    <button class="chip" data-jump="knowability">Knowability</button>
+    <button class="chip" data-jump="incommunicable">Attributes</button>
+    <button class="chip" data-jump="trinity">Trinity</button>
+    <button class="chip" data-jump="providence">Providence</button>
+    <button class="chip" data-jump="locate">Locate your framework</button>
+  </div>
+</nav>
+
+<div class="wrap">
+  <aside class="toc" aria-label="Contents">
+    <ol id="tocList">
+      <li class="grp">Foundations</li>
+      <li><a href="#knowability">Knowability</a></li>
+      <li><a href="#revelation">Existence &amp; revelation</a></li>
+      <li><a href="#names">The names of God</a></li>
+      <li class="grp">Attributes</li>
+      <li><a href="#attributes">Classifying</a></li>
+      <li><a href="#incommunicable">Incommunicable</a></li>
+      <li><a href="#communicable">Communicable</a></li>
+      <li class="grp">Triunity</li>
+      <li><a href="#trinity">The Trinity</a></li>
+      <li class="grp">Works</li>
+      <li><a href="#decree">Decree &amp; will</a></li>
+      <li><a href="#providence">Providence</a></li>
+      <li class="grp">Frontier</li>
+      <li><a href="#revisions">The modern revisions</a></li>
+      <li><a href="#locate">Locate your framework</a></li>
+      <li><a href="#sources">Sources</a></li>
+    </ol>
+  </aside>
+
+  <main>
+
+    <!-- KNOWABILITY -->
+    <section class="sec reveal" id="knowability">
+      <div class="sec-head"><span class="tag">01 · Foundations</span></div>
+      <h2>Knowability — the doctrine's front door</h2>
+      <div class="body-content">
+        <p class="lede">Before the doctrine says anything about God, it must say how anything can be said about God at all. Two claims, held together, do all the work.</p>
+        <ul>
+          <li><strong>God is incomprehensible.</strong> Job 11:7; Ps 145:3; Isa 55:8–9; Rom 11:33–36; 1 Tim 6:16. The finite cannot contain the infinite — no creature will ever hold God whole in its mind, in this life or the next.</li>
+          <li><strong>God is genuinely knowable.</strong> Jer 9:23–24; Jn 17:3; 1 Cor 2:10–12; Heb 1:1–2. What God reveals of himself is true knowledge, not approximation — <em>apprehended</em> truly even where never <em>comprehended</em> fully.</li>
+        </ul>
+        <h3>The working distinctions</h3>
+        <ul>
+          <li><strong>Archetypal / ectypal</strong> (Junius) — God's infinite self-knowledge versus theology as creatures can have it: revealed, accommodated, finite, yet true. All human theology is ectypal, including Scripture's.</li>
+          <li><strong>Accommodation</strong> (Calvin) — God "lisps" to us as a nurse to an infant. Revelation is scaled to the receiver without being falsified by the scaling.</li>
+          <li><strong>The three ways</strong> — theology reaches God's perfections by <em>causation</em> (from effects to their source), <em>negation</em> (denying creaturely limits: <em>in</em>-finite, <em>im</em>-mutable), and <em>eminence</em> (raising creaturely goods to their supreme degree).</li>
+        </ul>
+        <h3>How the words work</h3>
+        <p>When "wise" is said of God and of Solomon, is the word used <strong>univocally</strong> (same sense — Scotus), <strong>equivocally</strong> (unrelated senses), or <strong>analogically</strong> (related but proportioned senses — Thomas)? The classical mainstream answers <button class="t" data-h="analogia" data-d="Analogical predication: terms applied to God and creatures are neither identical in sense nor unrelated, but proportioned — creaturely wisdom really resembles its uncreated source without measuring it. The doctrine of a creature's language about its Creator.">analogically</button>: creaturely perfections really resemble their uncreated source without ever measuring it.</p>
+      </div>
+      <div class="fault">
+        <span class="lbl">Fault line</span>
+        <p>Univocity quietly places God and creatures in one genus — "being" — and God becomes the largest instance of a category he supposedly created. Equivocity makes theology impossible: if "good" means nothing recognisable when said of God, revelation goes silent. Analogy is the knife edge, and it is load-bearing: nearly every modern revision mapped in §10 begins, visibly or not, by adopting univocal language about God.</p>
+      </div>
+    </section>
+
+    <!-- REVELATION -->
+    <section class="sec reveal" id="revelation">
+      <div class="sec-head"><span class="tag">02 · Foundations</span></div>
+      <h2>Existence and revelation</h2>
+      <div class="body-content">
+        <p class="lede">Scripture never argues for God's existence. Gen 1:1 begins with him already there; Ps 14:1 treats denial as a moral posture, not an intellectual conclusion.</p>
+        <ul>
+          <li><strong>General revelation</strong> — Ps 19:1–6; Rom 1:19–21; Acts 14:17; 17:24–28. Sufficient to leave "without excuse"; not sufficient to save. Calvin adds the <button class="t" data-h="sensus divinitatis" data-d="Calvin's 'sense of divinity': an innate, universal awareness of God seeded in every mind, which fallen humanity suppresses or converts into idols rather than lacking. Institutes I.3.">sensus divinitatis</button> — the awareness is internal as well as external.</li>
+          <li><strong>Special revelation</strong> — God's redemptive self-disclosure in word and act, culminating in the Son (Heb 1:1–2), inscripturated for us.</li>
+        </ul>
+        <h3>The classical proofs</h3>
+        <ul>
+          <li><strong>Cosmological</strong> — from contingent being to necessary being (Aquinas's Five Ways; the kalam argument from the universe's beginning).</li>
+          <li><strong>Teleological</strong> — from order and fine-tuning to intelligence.</li>
+          <li><strong>Moral</strong> — from binding obligation to a lawgiver.</li>
+          <li><strong>Ontological</strong> — Anselm's single a priori proof: that than which nothing greater can be conceived must exist in reality. Rejected by Thomas, revived in modal form by Plantinga.</li>
+        </ul>
+        <h3>What are the proofs for?</h3>
+        <p>Three postures: <strong>evidentialism</strong> (the proofs ground rational belief), <strong>presuppositionalism</strong> (argument itself presupposes the God argued for; the mind's suppression of truth — the noetic effect mapped in the <a href="hamartiologymap.html#depravity">doctrine of sin</a> — means proofs persuade no one whose will is set), and <strong>Reformed epistemology</strong> (belief in God is properly basic and needs no proof, like belief in other minds).</p>
+      </div>
+      <div class="fault">
+        <span class="lbl">Fault line</span>
+        <p>At their strongest the proofs deliver a first cause, a designer, a necessary being — a "God of the philosophers." The doctrinal question is what to do with that: identify him with YHWH and let philosophy build the ground floor of theology (Thomas), or insist the ladder of nature was always meant to be climbed <em>inside</em> revelation, never before it (Barth's <em>Nein</em>, and the presuppositionalists from another direction). Where you land decides how your apologetics and your doctrine of Scripture relate for good.</p>
+      </div>
+    </section>
+
+    <!-- NAMES -->
+    <section class="sec reveal" id="names">
+      <div class="sec-head"><span class="tag">03 · Foundations</span></div>
+      <h2>The names of God</h2>
+      <div class="body-content">
+        <p class="lede">In Scripture God is not deduced but introduced — by name. The names are compressed revelation: each carries a claim.</p>
+        <h3>Hebrew</h3>
+        <div class="scroll-x">
+          <table>
+            <thead><tr><th>Name</th><th>Freight</th></tr></thead>
+            <tbody>
+              <tr><td class="term-cell">El / Elohim</td><td>Generic "God"; the plural <em>Elohim</em> with singular verbs (Gen 1:1) read as plural of majesty</td></tr>
+              <tr><td class="term-cell">El Shaddai</td><td>"God Almighty" — the patriarchal-era name (Gen 17:1; Ex 6:3)</td></tr>
+              <tr><td class="term-cell">El Elyon</td><td>"God Most High," possessor of heaven and earth (Gen 14:18–22)</td></tr>
+              <tr><td class="term-cell">El Olam</td><td>"Everlasting God" (Gen 21:33)</td></tr>
+              <tr><td class="term-cell">Adonai</td><td>"Lord" — ownership and rule; spoken aloud in place of the tetragrammaton</td></tr>
+              <tr><td class="term-cell">YHWH</td><td>The covenant name (Ex 3:14–15; 6:2–8) — ~6,800 occurrences, more than any other name</td></tr>
+              <tr><td class="term-cell">YHWH Tseva'ot</td><td>"LORD of hosts" — commander of heaven's armies</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Greek</h3>
+        <div class="scroll-x">
+          <table>
+            <thead><tr><th>Name</th><th>Freight</th></tr></thead>
+            <tbody>
+              <tr><td class="term-cell">Theos</td><td>God — carrying the whole Old Testament freight of <em>Elohim</em></td></tr>
+              <tr><td class="term-cell">Kyrios</td><td>The Septuagint's rendering of YHWH — then applied to Jesus (Rom 10:9,13 quoting Joel 2:32; Phil 2:9–11 echoing Isa 45:23). The earliest Christology happens inside the divine name</td></tr>
+              <tr><td class="term-cell">Pater</td><td>Father — present in the OT (Isa 63:16), made the characteristic address by Jesus (<em>Abba</em>, Mk 14:36)</td></tr>
+              <tr><td class="term-cell">Pantokrator</td><td>"Almighty" — Revelation's preferred title (Rev 1:8; 4:8)</td></tr>
+              <tr><td class="term-cell">Ego eimi</td><td>"I am" — Jn 8:58 reaching back to Ex 3:14; the audience's stones show they heard the claim</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="fault">
+        <span class="lbl">The exegetical crux · Ex 3:14</span>
+        <p><em>Ehyeh asher ehyeh.</em> The metaphysical reading (LXX: <em>ho ōn</em>, "the one who is") hears self-existent Being — the fountainhead of the doctrine of <button class="t" data-h="aseity" data-d="From a se, 'from himself': God's underived, self-sufficient fullness of life. He is not caused, sustained, or completed by anything outside himself — the ground of every other incommunicable attribute.">aseity</button>. The covenantal reading hears a promise: "I will be [with you]," a name about presence, not ontology.</p>
+        <p><strong>The alternative is false.</strong> Only a God who is <em>a se</em> can promise presence unconditionally — a dependent god's "I will be with you" is only as good as whatever he depends on. The name grounds the covenant in the being; the traditions err by keeping one half.</p>
+      </div>
+    </section>
+
+    <!-- CLASSIFYING -->
+    <section class="sec reveal" id="attributes">
+      <div class="sec-head"><span class="tag">04 · Attributes</span></div>
+      <h2>Classifying the attributes</h2>
+      <div class="body-content">
+        <p class="lede">One rule governs everything in the next two sections: <strong>the attributes are not parts of God.</strong> God is not assembled from goodness plus power plus knowledge; each attribute names the one undivided essence under a distinct aspect.</p>
+        <h3>The taxonomies</h3>
+        <ul>
+          <li><strong>Incommunicable / communicable</strong> (the Reformed standard) — perfections with no creaturely analogue (aseity, immutability, infinity) versus perfections God shares in creaturely measure (knowledge, love, holiness). The line is soft: even the communicable attributes are held incommunicably — God's love is <em>a se</em>, ours is not.</li>
+          <li><strong>Negative / positive</strong> — what God is not (in-finite, im-mutable) versus what he is.</li>
+          <li><strong>Absolute / relative</strong> — God in himself versus God in relation to the world.</li>
+          <li><strong>Barth's pairing</strong> — "the one who loves in freedom": every perfection an inflection of love or of freedom, each interpreting the other.</li>
+        </ul>
+        <p>Under <button class="t" data-h="simplicitas" data-d="Divine simplicity: God is not composed of parts — not of body and soul, essence and existence, substance and accidents, nor of his attributes. Whatever is composed depends on its parts and on whatever composed it; a composite God would stand behind neither.">simplicity</button>, no attribute is "more fundamental" than another. God's justice is his love is his holiness — distinguished in our apprehension and in his works, not divided in his being.</p>
+      </div>
+      <div class="fault">
+        <span class="lbl">Fault line</span>
+        <p>Every reduction of the doctrine of God in history begins as a <strong>ranking</strong>. Make love the real centre and holiness a qualification, and you get liberal Protestantism's grandfatherly deity; make sovereignty the centre and you get a will with no character; make holiness the centre alone and you get a judge no one can approach. The preacher's antinomy — "God's love wrestled with his justice at the cross" — is precluded by simplicity: the cross is not one attribute defeating another but the one God being wholly himself.</p>
+      </div>
+    </section>
+
+    <!-- INCOMMUNICABLE -->
+    <section class="sec reveal" id="incommunicable">
+      <div class="sec-head"><span class="tag">05 · Attributes</span></div>
+      <h2>Incommunicable attributes</h2>
+      <div class="body-content">
+        <p class="lede">The perfections that mark the Creator–creature line itself. Every one of them is currently contested — which is why this section carries the doctrine's live ammunition.</p>
+        <div class="scroll-x">
+          <table>
+            <thead><tr><th>Attribute</th><th>The claim</th><th>Texts</th><th>Under pressure from</th></tr></thead>
+            <tbody>
+              <tr><td class="pos">Aseity</td><td>God is of himself — underived, self-sufficient fullness of life; the world adds nothing to him</td><td>Ex 3:14; Jn 5:26; Acts 17:24–25; Rom 11:35–36</td><td>Process and panentheist accounts in which the world completes God</td></tr>
+              <tr><td class="pos">Simplicity</td><td>Not composed of parts; God <em>is</em> his attributes — <button class="t" data-h="actus purus" data-d="'Pure act': God has no unrealised potential — nothing he could become that he is not already. A God with potentiality would need something outside himself to actualise it, and that something would be more ultimate than God.">actus purus</button></td><td>Deut 6:4; Jn 4:24; inference from aseity — whatever is composed depends on its parts</td><td>Theistic personalism; social trinitarianism; much analytic philosophy of religion</td></tr>
+              <tr><td class="pos">Immutability</td><td>No change in being, perfections, purposes, or promises</td><td>Mal 3:6; Jas 1:17; Num 23:19; Ps 102:26–27</td><td>Open theism; mutualism; the relenting texts (below)</td></tr>
+              <tr><td class="pos">Impassibility</td><td>"Without passions" (WCF 2.1): nothing outside God can inflict states on him. Not apathy — fully actual love that needs no arousal and fears no exhaustion</td><td>Acts 14:15; Job 35:6–7; with the whole witness to God's blessedness (1 Tim 1:11)</td><td>The twentieth century's passibilist near-consensus (Moltmann and after)</td></tr>
+              <tr><td class="pos">Eternity</td><td>Boethius: <button class="t" data-h="tota simul" data-d="Boethius's definition of eternity: interminabilis vitae tota simul et perfecta possessio — 'the whole, simultaneous, and perfect possession of unbounded life.' Not endless duration but a life possessed entire, without loss to the past or wait for the future.">the whole, simultaneous, perfect possession of unbounded life</button> — not endless time but fullness above time</td><td>Ps 90:2,4; Isa 57:15; 2 Pet 3:8; Jude 25</td><td>Temporalist accounts (Wolterstorff, Swinburne, Craig)</td></tr>
+              <tr><td class="pos">Immensity &amp; omnipresence</td><td>Not contained by space, yet wholly present at every point of it — present in essence, not merely in power</td><td>1 Kgs 8:27; Ps 139:7–10; Jer 23:23–24; Acts 17:27–28</td><td>—</td></tr>
+              <tr><td class="pos">Infinity</td><td>Without limit in being and perfection; the qualitative mode of every other attribute</td><td>Job 11:7–9; Ps 145:3</td><td>Finite-god theologies</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>The relenting texts</h3>
+        <p>Gen 6:6, Ex 32:14, Jon 3:10 — God "relents," "regrets." The classical reading: <button class="t" data-h="anthropopathism" data-d="Scripture's ascription of human emotions and changes of mind to God, read as accommodated description — true of God's works and relations creature-ward, not of change in his essence. The interpretive twin of anthropomorphism (God's 'hand,' 'eyes,' 'arm').">anthropopathism</button> — the unchanging counsel of God described from the creature's side, in the grammar of time, exactly as his "hand" and "eyes" describe his agency without giving him a body.</p>
+
+        <h3>Impassibility and the cross</h3>
+        <p>The classical tradition never denied that <em>God the Son suffered</em>. Cyril's formula is deliberately shocking: the impassible Word <em>suffered impassibly</em> — truly suffered, in the flesh he made his own, without the divine nature being converted into a sufferer. The <button class="t" data-h="communicatio idiomatum" data-d="The 'communication of attributes': because the one person of Christ subsists in two natures, what is true of either nature is truly said of the person. Hence 'they crucified the Lord of glory' (1 Cor 2:8) — the person suffered, in his human nature.">communicatio idiomatum</button> is what lets the church say "God was crucified" without saying "deity died."</p>
+      </div>
+
+      <div class="fault">
+        <span class="lbl">The exegetical crux · 1 Sam 15</span>
+        <p>One chapter holds both wires. God "regrets" making Saul king (vv. 11, 35) — and between those verses the narrator insists God "is not a man, that he should have regret" (v. 29). The chapter is forcing a two-register reading: real engagement described creature-ward, unchanging counsel asserted God-ward.</p>
+        <p>Open theism takes vv. 11 and 35 straight and treats v. 29 as local to one promise; a flattened classicism takes v. 29 straight and reduces vv. 11 and 35 to mere appearance. Both refuse the double register the text itself sets up — and your reading of this one chapter is, in miniature, your entire doctrine of God.</p>
+      </div>
+    </section>
+
+    <!-- COMMUNICABLE -->
+    <section class="sec reveal" id="communicable">
+      <div class="sec-head"><span class="tag">06 · Attributes</span></div>
+      <h2>Communicable attributes</h2>
+      <div class="body-content">
+        <p class="lede">The perfections God shares — in creaturely measure, by grace, never univocally. Here the doctrine turns pastoral, because these are the attributes by which God deals with us.</p>
+        <div class="scroll-x">
+          <table>
+            <thead><tr><th>Attribute</th><th>Content</th><th>Texts</th></tr></thead>
+            <tbody>
+              <tr><td class="pos">Knowledge</td><td>God knows himself exhaustively, all actual things (<em>scientia visionis</em>), and all possible things (<em>scientia simplicis intelligentiae</em>) — including counterfactuals (Matt 11:21)</td><td>Ps 139:1–6; Isa 46:9–10; Heb 4:13; 1 Jn 3:20</td></tr>
+              <tr><td class="pos">Wisdom</td><td>Knowledge ordered to the best ends by the best means — displayed, not merely declared, in creation and the cross</td><td>Prov 8:22–31; Rom 11:33; 1 Cor 1:21–24</td></tr>
+              <tr><td class="pos">Power</td><td>Omnipotence: God does all he wills. Not the ability to do nonsense (square circles) or to un-God himself — he cannot lie, deny himself, or die</td><td>Gen 18:14; Jer 32:17; Matt 19:26; 2 Tim 2:13; Tit 1:2</td></tr>
+              <tr><td class="pos">Holiness</td><td>Transcendent otherness <em>and</em> moral purity — the attribute Scripture trebles (the only one it does)</td><td>Isa 6:3; Lev 19:2; 1 Pet 1:15–16; Rev 4:8</td></tr>
+              <tr><td class="pos">Righteousness</td><td>God always acts in accord with his own being; the Judge of all the earth does right — and at the cross is shown to be "just and the justifier"</td><td>Gen 18:25; Ps 97:2; Rom 3:25–26</td></tr>
+              <tr><td class="pos">Love</td><td>Defined by the sending, not by sentiment; electing, initiating, covenantal</td><td>Deut 7:7–8; Jn 3:16; Rom 5:8; 1 Jn 4:8–10</td></tr>
+              <tr><td class="pos">Grace &amp; mercy</td><td>Favour to the undeserving; compassion on the miserable — the self-description God gave at Sinai</td><td>Ex 34:6–7; Eph 2:4–8; Tit 3:5</td></tr>
+              <tr><td class="pos">Truth &amp; faithfulness</td><td>God is reliable in being and word; his promises cannot fail because he cannot</td><td>Num 23:19; Lam 3:22–23; 2 Tim 2:13</td></tr>
+              <tr><td class="pos">Jealousy</td><td>Covenant exclusivity — the demand of a husband, not the envy of a rival</td><td>Ex 34:14; Deut 4:24</td></tr>
+              <tr><td class="pos">Wrath</td><td>Not an attribute in tension with love but holiness and justice in contact with sin — settled judicial opposition, not temper</td><td>Rom 1:18; Nah 1:2–3; Jn 3:36</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Ex 34:6–7 is the hinge text</strong> — the description God gives of himself when Moses asks to see his glory, and the verse the rest of Scripture quotes most: Num 14:18; Neh 9:17; Pss 86:15; 103:8; 145:8; Joel 2:13; Jon 4:2; Nah 1:3. The Bible's own doctrine of God is this formula, expounded.</p>
+      </div>
+      <div class="fault">
+        <span class="lbl">Fault line</span>
+        <p>Ex 34:6–7 holds "abounding in steadfast love, forgiving iniquity" and "who will by no means clear the guilty" in a single self-description — Scripture's own refusal to rank the attributes. The prophets then quote it against each other's situations: Jonah hurls the mercy half at God in protest (Jon 4:2); Nahum aims the justice half at Nineveh a century later (Nah 1:2–3). A doctrine of God that cannot preach both halves of the same verse has already broken simplicity — it has chosen a favourite attribute and demoted the rest to fine print.</p>
+      </div>
+    </section>
+
+    <!-- TRINITY -->
+    <section class="sec reveal" id="trinity">
+      <div class="sec-head"><span class="tag grace">07 · Triunity</span></div>
+      <h2>The Trinity — the grammar of the whole</h2>
+      <div class="body-content">
+        <p class="lede">The doctrine of God is not a unitarian essay with a trinitarian appendix. The one God <em>is</em> Father, Son, and Holy Spirit — one essence, three persons. The full structural treatment lives in its own map: <a href="trinitymap.html">the Trinity Map</a>. What theology proper needs from it:</p>
+        <ul>
+          <li><strong>The processions</strong> — the Father unbegotten, the Son eternally begotten (Jn 5:26; the <em>monogenēs</em> texts), the Spirit proceeding (Jn 15:26). The persons are distinguished by relations of origin, by nothing else — not by rank, will, or attribute.</li>
+          <li><strong>The missions reveal the processions</strong> — the Son is <em>sent</em> in time because he is <em>begotten</em> in eternity; the economy is our access to the immanent life, truly though not exhaustively.</li>
+          <li><strong><em>Opera ad extra indivisa</em></strong> — the external works of the Trinity are undivided: creation, redemption, and sanctification are works of the one God, with each person acting in the mode of his procession; <em>appropriation</em> assigns a work to one person (creation to the Father, redemption to the Son) without excluding the others.</li>
+          <li><strong>One will, one power, one glory</strong> — will is a property of nature, not of person. This is why the 2016 evangelical controversy over eternal functional subordination mattered: an eternal relation of authority and submission requires the Son's will to be other than the Father's, and the doctrine of God starts to crack at <em>homoousion</em>.</li>
+        </ul>
+      </div>
+      <div class="fault">
+        <span class="lbl">Fault line · Rahner's rule</span>
+        <p>"The economic Trinity is the immanent Trinity, and vice versa." Read as a rule of <strong>revelation</strong> — the missions truly disclose the processions; there is no hidden God behind the God of the gospel — it is classic and vital. Read as a rule of <strong>constitution</strong> — God becomes triune in and through his history with the world — it hands God over to the world process: Hegel in Nicene dress.</p>
+        <p>The test: can you still say God would be the same triune fullness had he never created? Lose that, and aseity, grace, and the freedom of creation all go over the same cliff.</p>
+      </div>
+    </section>
+
+    <!-- DECREE -->
+    <section class="sec reveal" id="decree">
+      <div class="sec-head"><span class="tag">08 · Works</span></div>
+      <h2>The decree and the will of God</h2>
+      <div class="body-content">
+        <p class="lede">Between who God is and what God does stands what God <em>purposes</em>: one eternal, unconditional, all-comprehending counsel (Eph 1:11; Isa 46:9–10; Acts 15:18).</p>
+        <h3>Distinctions in the divine will</h3>
+        <ul>
+          <li><strong>Decretive / preceptive</strong> — what God ordains to occur versus what God commands as right (Deut 29:29). Every tradition uses some form of this; without it, every broken commandment falsifies sovereignty.</li>
+          <li><strong>Antecedent / consequent</strong> (Damascene, taken up by Arminianism) — God's will considered before and after creaturely response.</li>
+          <li><strong>Necessary / free</strong> — God wills his own goodness necessarily; he wills creation freely. Nothing outside God compelled the world's existence.</li>
+        </ul>
+        <h3>The knowledge–decree order</h3>
+        <p>God's <em>natural</em> knowledge (all possibles) precedes the decree; his <em>free</em> knowledge (all actuals) follows it. Molina inserted a third moment between them — <button class="t" data-h="scientia media" data-d="Middle knowledge: God's pre-volitional knowledge of what every possible free creature would freely do in every possible circumstance. God then decrees which circumstances to actualise, achieving sovereignty by selection while leaving creaturely freedom libertarian.">middle knowledge</button> — by which God knows what every free creature <em>would</em> do in any circumstance, and sovereignly selects a world accordingly. The standing objection: what grounds the truth of these counterfactuals, prior to the decree and outside God's essence?</p>
+        <p>The <strong>supralapsarian / infralapsarian</strong> question — where the fall stands in the logical order of the decree — is mapped from the sin side in <a href="hamartiologymap.html#providence">the Doctrine of Sin</a>.</p>
+      </div>
+      <div class="fault">
+        <span class="lbl">Fault line · 1 Tim 2:4</span>
+        <p>"God desires all people to be saved" — and "our God is in the heavens; he does all that he pleases" (Ps 115:3). Every tradition resolves the pair by distinguishing two registers of the divine will; they differ only in which register they make load-bearing. The Reformed make the decretive will ultimate and read 2:4 as preceptive or as "all kinds"; Arminians make the antecedent will genuine and universal, resisted in the consequent. The system that refuses <em>any</em> distinction has two exits: universalism, or a God whose deepest desire is eternally frustrated. There is no fourth option on the table.</p>
+      </div>
+    </section>
+
+    <!-- PROVIDENCE -->
+    <section class="sec reveal" id="providence">
+      <div class="sec-head"><span class="tag">09 · Works</span></div>
+      <h2>Providence</h2>
+      <div class="body-content">
+        <p class="lede">The decree, executed in time. Three classical moments:</p>
+        <ul>
+          <li><strong>Preservation</strong> — all things held in being, moment by moment (Col 1:17; Heb 1:3; Neh 9:6). Existence is continuously given, not merely initially granted.</li>
+          <li><strong>Concurrence</strong> — <button class="t" data-h="concursus" data-d="Divine concurrence: God and the creature are both fully active in the same act, at different levels of causality — primary and secondary. Not a division of labour or 50/50 cooperation, but two total causes of one effect, each at its own level.">concursus</button>: God acts in and with every creaturely action as primary cause, while secondary causes remain real causes (Acts 17:28; Prov 21:1).</li>
+          <li><strong>Government</strong> — all things steered to their appointed end, from thrones to sparrows to dice (Ps 103:19; Prov 16:33; Matt 10:29–31; Eph 1:11).</li>
+        </ul>
+        <p><strong>Miracle</strong> is not God intervening in a machine he otherwise ignores, but the ordinary Governor acting extraordinarily — providence made conspicuous.</p>
+        <p><strong>Providence and evil</strong> — the boundary stones (God ordains without authoring; Acts 2:23 with Jas 1:13) and the proposed mechanisms are mapped at length in <a href="hamartiologymap.html#providence">the Doctrine of Sin</a>; this map only insists the question belongs to theology proper before it belongs to apologetics.</p>
+      </div>
+      <div class="fault">
+        <span class="lbl">Fault line</span>
+        <p>Providence dies by two opposite reductions. <strong>Deism</strong> keeps secondary causes and retires the primary — God winds the watch and withdraws. <strong>Occasionalism</strong> keeps the primary cause and dissolves the secondary — creatures are occasions, never agents, and fire does not actually burn. Concursus is not a compromise between them; it is a different claim: two total causes at two levels. Lose it and prayer becomes either pointless (nothing to ask of an absent God) or the only causality there is (nothing else was ever doing anything).</p>
+      </div>
+    </section>
+
+    <!-- REVISIONS -->
+    <section class="sec reveal" id="revisions">
+      <div class="sec-head"><span class="tag fall">10 · Frontier</span></div>
+      <h2>The modern revisions</h2>
+      <div class="body-content">
+        <p class="lede">For eighteen centuries the attributes of §05 were the shared inheritance of East and West, Rome and the Reformation. The last two centuries produced a family of revisions — each powered by a real pastoral instinct, each purchasing it at a price.</p>
+        <div class="scroll-x">
+          <table>
+            <thead><tr><th>Revision</th><th>Core move</th><th>What it protects</th><th>What it costs</th></tr></thead>
+            <tbody>
+              <tr><td class="pos">Theistic personalism</td><td>God as the supreme <em>person</em> who has properties — perfect-being theology in the analytic mode</td><td>Intelligibility; philosophical tractability</td><td>The Creator–creature distinction thins: God becomes the greatest being among beings, univocally described</td></tr>
+              <tr><td class="pos">Theistic mutualism</td><td>Real give-and-take: creatures genuinely affect God, whose essence nonetheless holds</td><td>The relational texts read straight</td><td>Simplicity and strong immutability quietly dropped — often without the author noticing</td></tr>
+              <tr><td class="pos">Open theism</td><td>The future is partly unsettled; God knows all that can be known, and takes real risks</td><td>Libertarian freedom; evil recast as risk rather than ordination</td><td>Exhaustive foreknowledge; predictive prophecy; Isa 46:10</td></tr>
+              <tr><td class="pos">Process theism</td><td>God dipolar, developing with the world; power persuasive, never unilateral; no creation <button class="t" data-h="ex nihilo" data-d="Creation 'out of nothing': the world is not made from pre-existing stuff nor emanated from God's substance, but called into being by his word alone (Gen 1:1; Rom 4:17; Heb 11:3). The doctrine that fixes the Creator–creature distinction — and the one process theism must deny.">ex nihilo</button></td><td>A theodicy: God cannot stop evil, only lure against it</td><td>Aseity, omnipotence, eschatological guarantee — a God who needs the world cannot save it</td></tr>
+              <tr><td class="pos">Divine suffering</td><td>Moltmann's <em>Crucified God</em>: the cross taken into God's own being; post-Auschwitz solidarity</td><td>God with the victims, not above them</td><td>If suffering enters the divine nature itself, the cross's asymmetry — the free one suffering <em>for</em> the bound — begins to dissolve</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Against this family stands the <strong>classical resourcement</strong> of the last two decades (Webster, Sonderegger, Dolezal, Duby, Barrett, Carter) — a recovery, not a nostalgia: it argues the tradition already held everything the revisions want, in a grammar that doesn't shrink God to get it.</p>
+      </div>
+      <div class="fault">
+        <span class="lbl">The honest position</span>
+        <p>Each revision has noticed something true: God is near, engaged, moved <em>for</em> us; the Bible's God is no iceberg. The weak response is to treat the instinct as an enemy. The strong response is to absorb it and refuse the metaphysics — because each revision buys God's nearness by shrinking the God who is near. The classical wager runs the other way: <strong>only the God who needs nothing from you can be wholly gift to you.</strong> Aseity is not the rival of grace; it is grace's precondition. A God moved by the world is, in the end, a God the world can hold hostage.</p>
+      </div>
+    </section>
+
+    <!-- LOCATOR -->
+    <section class="sec reveal no-fault" id="locate">
+      <div class="sec-head"><span class="tag grace">11 · Signature</span></div>
+      <h2>Locate your framework</h2>
+      <p class="lede">Four decisions determine nearly everything else in your doctrine of God. Most people inherit answers without ever seeing the questions — then discover their prayers assume one God and their systematics another.</p>
+
+      <div class="loc-grid" id="qs">
+        <div class="q" data-q="q1">
+          <span class="qn">Decision 01 · Composition</span>
+          <h4>Are God's attributes identical with his essence, or really distinct properties he possesses?</h4>
+          <button class="opt" data-v="identical" aria-pressed="false">Identical — God is his attributes (simplicity)</button>
+          <button class="opt" data-v="distinct" aria-pressed="false">Really distinct properties God exemplifies</button>
+        </div>
+
+        <div class="q" data-q="q2">
+          <span class="qn">Decision 02 · Change</span>
+          <h4>Can God change or suffer?</h4>
+          <button class="opt" data-v="none" aria-pressed="false">No — immutable and impassible</button>
+          <button class="opt" data-v="responsive" aria-pressed="false">Essence unchanged, but real responsive states</button>
+          <button class="opt" data-v="suffers" aria-pressed="false">Yes — God genuinely changes and suffers</button>
+        </div>
+
+        <div class="q" data-q="q3">
+          <span class="qn">Decision 03 · Time</span>
+          <h4>How is God eternal?</h4>
+          <button class="opt" data-v="timeless" aria-pressed="false">Timeless — his whole life at once</button>
+          <button class="opt" data-v="since" aria-pressed="false">Timeless without creation, temporal with it</button>
+          <button class="opt" data-v="everlasting" aria-pressed="false">Everlasting — through all time, without beginning or end</button>
+        </div>
+
+        <div class="q" data-q="q4">
+          <span class="qn">Decision 04 · Foreknowledge</span>
+          <h4>How does God know the future free acts of creatures?</h4>
+          <button class="opt" data-v="decree" aria-pressed="false">He knows them because he decreed them</button>
+          <button class="opt" data-v="middle" aria-pressed="false">Middle knowledge — what anyone would do in any circumstance</button>
+          <button class="opt" data-v="simple" aria-pressed="false">Simple foreknowledge — he sees, but does not determine</button>
+          <button class="opt" data-v="open" aria-pressed="false">He doesn't — a free future is not yet there to know</button>
+        </div>
+      </div>
+
+      <div id="readout" aria-live="polite">
+        <p class="placeholder">Answer the four decisions above. The readout names where your answers converge, what they commit you to, and — more usefully — where they strain against each other.</p>
+      </div>
+      <button class="reset" id="resetBtn" hidden>Clear answers</button>
+    </section>
+
+    <!-- SOURCES -->
+    <section class="sec reveal no-fault" id="sources">
+      <div class="sec-head"><span class="tag">12 · Apparatus</span></div>
+      <h2>Primary sources</h2>
+      <ul class="src">
+        <li><b>Augustine</b> — Confessions I, VII; De Trinitate V–VII</li>
+        <li><b>John of Damascus</b> — On the Orthodox Faith I</li>
+        <li><b>Anselm</b> — Monologion; Proslogion</li>
+        <li><b>Aquinas</b> — ST I, qq. 2–26 (de Deo uno); 27–43 (de Deo trino)</li>
+        <li><b>Calvin</b> — Institutes I.1–13</li>
+        <li><b>Charnock</b> — The Existence and Attributes of God</li>
+        <li><b>Turretin</b> — Institutes, Third Topic</li>
+        <li><b>Confessional</b> — Nicene &amp; Athanasian Creeds; WCF 2; Belgic 1; Augsburg I</li>
+        <li><b>Bavinck</b> — Reformed Dogmatics, vol. 2</li>
+        <li><b>Muller</b> — Post-Reformation Reformed Dogmatics, vol. 3</li>
+        <li><b>Barth</b> — Church Dogmatics II/1</li>
+        <li><b>Moltmann</b> — The Crucified God (the passibilist case)</li>
+        <li><b>Weinandy</b> — Does God Suffer?</li>
+        <li><b>Gavrilyuk</b> — The Suffering of the Impassible God</li>
+        <li><b>Frame</b> — The Doctrine of God</li>
+        <li><b>Webster</b> — God Without Measure, vol. 1</li>
+        <li><b>Sonderegger</b> — Systematic Theology, vol. 1</li>
+        <li><b>Dolezal</b> — All That Is in God</li>
+        <li><b>Duby</b> — Divine Simplicity; God in Himself</li>
+        <li><b>Carter</b> — Contemplating God with the Great Tradition</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  A comparative map, not a confession. Dotted terms carry definitions — tap them.
+  Companion maps in this collection: <a href="trinitymap.html">The Trinity Map</a> · <a href="hamartiologymap.html">The Doctrine of Sin</a>.
+</footer>
+
+<div id="tip" role="tooltip"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- smooth jump chips ---------- */
+  document.querySelectorAll('[data-jump]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var el = document.getElementById(b.dataset.jump);
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  /* ---------- fault-lines-only mode ---------- */
+  var faultBtn = document.getElementById('faultBtn');
+  faultBtn.addEventListener('click', function(){
+    var on = faultBtn.getAttribute('aria-pressed') === 'true';
+    faultBtn.setAttribute('aria-pressed', String(!on));
+    document.body.classList.toggle('faults', !on);
+    faultBtn.textContent = !on ? 'Show full map' : 'Fault lines only';
+  });
+
+  /* ---------- glossary tooltips ---------- */
+  var tip = document.getElementById('tip');
+  var openBtn = null;
+
+  function closeTip(){
+    tip.style.display = 'none';
+    openBtn = null;
+  }
+  function showTip(btn){
+    tip.innerHTML = '<span class="h">' + btn.dataset.h + '</span>' + btn.dataset.d;
+    tip.style.display = 'block';
+    tip.style.left = '0px';
+    tip.style.top = '0px';
+    var r = btn.getBoundingClientRect();
+    var tw = tip.offsetWidth;
+    var left = r.left + window.scrollX;
+    var maxLeft = window.scrollX + document.documentElement.clientWidth - tw - 12;
+    if(left > maxLeft) left = maxLeft;
+    if(left < window.scrollX + 10) left = window.scrollX + 10;
+    tip.style.left = left + 'px';
+    tip.style.top = (r.bottom + window.scrollY + 8) + 'px';
+    openBtn = btn;
+  }
+
+  document.querySelectorAll('button.t').forEach(function(btn){
+    btn.setAttribute('type','button');
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(openBtn === btn){ closeTip(); return; }
+      showTip(btn);
+    });
+  });
+  document.addEventListener('click', closeTip);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeTip(); });
+  window.addEventListener('scroll', function(){ if(openBtn) closeTip(); }, {passive:true});
+
+  /* ---------- scrollspy ---------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var secs  = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  if('IntersectionObserver' in window){
+    var spy = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(!en.isIntersecting) return;
+        links.forEach(function(a){ a.classList.remove('on'); });
+        var i = secs.indexOf(en.target);
+        if(i > -1) links[i].classList.add('on');
+      });
+    }, {rootMargin:'-15% 0px -70% 0px'});
+    secs.forEach(function(s){ if(s) spy.observe(s); });
+
+    /* reveal on scroll */
+    if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      var rev = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if(en.isIntersecting){ en.target.classList.add('in'); rev.unobserve(en.target); }
+        });
+      }, {rootMargin:'0px 0px -8% 0px'});
+      document.querySelectorAll('.reveal').forEach(function(el){ rev.observe(el); });
+    } else {
+      document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+    }
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* ---------- framework locator ---------- */
+  var answers = {};
+  var readout = document.getElementById('readout');
+  var resetBtn = document.getElementById('resetBtn');
+
+  document.querySelectorAll('#qs .q').forEach(function(q){
+    var key = q.dataset.q;
+    q.querySelectorAll('.opt').forEach(function(opt){
+      opt.setAttribute('type','button');
+      opt.addEventListener('click', function(){
+        q.querySelectorAll('.opt').forEach(function(o){ o.setAttribute('aria-pressed','false'); });
+        opt.setAttribute('aria-pressed','true');
+        answers[key] = opt.dataset.v;
+        render();
+      });
+    });
+  });
+
+  resetBtn.addEventListener('click', function(){
+    answers = {};
+    document.querySelectorAll('#qs .opt').forEach(function(o){ o.setAttribute('aria-pressed','false'); });
+    render();
+  });
+
+  function cluster(a){
+    if(a.q4 === 'open' || a.q2 === 'suffers') return {
+      name:'Open & relational territory',
+      body:'God moves through time with his creatures — genuinely affected, genuinely at risk. The position is powered by the relational texts read at face value and by the problem of evil recast as risk rather than ordination. It is internally coherent; the question is what it can still promise.',
+      ent:[
+        'Providence becomes wise improvisation: God responds masterfully but does not govern exhaustively.',
+        'Predictive prophecy must be reread as declaration of intent, conditional warning, or probability — Isa 46:10 is your hardest text.',
+        'Prayer genuinely informs and moves God; assurance that all things work together weakens toward "God will be resourceful."',
+        'You owe a boundary against process theism: keep creation ex nihilo and God’s power to act unilaterally, or the line disappears.'
+      ]
+    };
+    if(a.q4 === 'middle') return {
+      name:'Molinist',
+      body:'Between God’s natural and free knowledge stands middle knowledge: what every possible creature would freely do in every possible circumstance. God sovereignly selects which world to actualise — sovereignty by selection rather than by decree. Paired with a "timeless without creation, temporal with it" eternity, this is William Lane Craig’s exact position.',
+      ent:[
+        'Meticulous providence and libertarian freedom are both affirmed — this is the position’s entire selling point.',
+        'Election reads as God choosing a world, not persons directly.',
+        'A feasible-worlds theodicy opens: perhaps no feasible world of free creatures lacked evil.',
+        'Your standing debt is the grounding objection: what makes counterfactuals of creaturely freedom true, prior to the decree and outside God’s essence?'
+      ]
+    };
+    if(a.q1 === 'identical' && a.q2 === 'none' && a.q4 === 'decree') return {
+      name:'Classical (Thomist–Reformed)',
+      body:'Simple, immutable, impassible, exhaustively sovereign — the shared grammar of Augustine, Aquinas, and the Reformed orthodox. Its wager: only the God who needs nothing from the world can be wholly gift toward it.',
+      ent:[
+        'All God-talk is analogical — a simple God cannot be caught in univocal predicates.',
+        'The relenting texts are accommodation: unchanging counsel spoken in the grammar of time.',
+        'Impassibility reads as invulnerable love, not remoteness — nothing outside God can make him stop loving.',
+        'Assurance rests on immutable counsel; prayer is a means within providence, not information delivered to God.',
+        'Your standing debt is the real-relation problem: creation is really related to God, God only notionally to creation. Bite that bullet knowingly or refine it.'
+      ]
+    };
+    if(a.q2 === 'responsive' || a.q1 === 'distinct') return {
+      name:'Theistic mutualism (neo-classical)',
+      body:'God is really affected by his creatures — genuine give-and-take — while his character and purposes hold constant. This is the working doctrine of much modern evangelical systematics, often held without noticing it is a revision of the classical inheritance.',
+      ent:[
+        'Attributes become properties God has rather than what God is; simplicity is qualified or surrendered.',
+        'God’s conscious life has succession — he is temporal at least since creation.',
+        'If you chose simple foreknowledge: it certifies the future but cannot guide providence, since what God foresees already includes his own responses.',
+        'The relational arguments that carried you here are the ones open theists press further — mark exactly where you stop, and why.'
+      ]
+    };
+    return {
+      name:'Mixed position',
+      body:'Your answers do not sit inside one historic system. That is not automatically a defect — but an eclectic doctrine of God has to be argued for deliberately rather than inherited by accident, because the systems it borrows from are internally connected.',
+      ent:[
+        'Identify which single claim you would not surrender under pressure; that is your actual centre.',
+        'Then check whether the remaining commitments are consistent with it or merely inherited.'
+      ]
+    };
+  }
+
+  function strains(a){
+    var out = [];
+    if(a.q3 === 'timeless' && a.q4 === 'open'){
+      out.push('You hold that God is timeless and that the future is open. Openness is an essentially temporal notion — a "not yet settled" indexed to some now. A timeless God has no now for the future to be open relative to. One of these commitments must give.');
+    }
+    if(a.q1 === 'identical' && a.q2 !== 'none' && a.q2 !== undefined){
+      out.push('You affirm simplicity while granting God really distinct responsive states. In the classical grammar a simple God has no accidents — nothing in him that comes and goes — and responsive states are precisely accidents. Either qualify the simplicity, redescribe the responses as relations on the creature’s side, or concede the revision openly.');
+    }
+    if(a.q1 === 'identical' && a.q4 === 'middle'){
+      out.push('Simplicity plus middle knowledge sharpens the grounding objection into a threat to aseity: counterfactuals of freedom stand true prior to God’s decree, ungrounded in his essence, yet they condition which worlds he can actualise. A simple, a se God hemmed in by truths he did not ground is a strained picture — Thomists and open theists agree on this one point.');
+    }
+    if(a.q2 === 'none' && (a.q3 === 'everlasting' || a.q3 === 'since')){
+      out.push('You deny all change while placing God in time. A temporal God’s conscious life has succession — first knowing this moment as present, then the next — and succession is change. Most who hold both retreat to essential immutability (no change of character, counsel, or being) and quietly surrender the strict claim. Better to do that deliberately than by drift.');
+    }
+    if(a.q4 === 'decree' && a.q2 === 'suffers'){
+      out.push('You hold that God decrees all things and genuinely suffers — which makes his suffering self-decreed. That is coherent only as voluntary assumption (the cross, freely willed in the incarnate Son), not as ontological vulnerability. Decide which you mean; they are two different doctrines of God.');
+    }
+    return out;
+  }
+
+  function render(){
+    var n = Object.keys(answers).length;
+    resetBtn.hidden = n === 0;
+    if(n < 4){
+      readout.innerHTML = '<p class="placeholder">' + n + ' of 4 answered. The readout names where your answers converge, what they commit you to, and where they strain against each other.</p>';
+      return;
+    }
+    var c = cluster(answers);
+    var s = strains(answers);
+    var html = '<h3>Convergence</h3>' +
+               '<p class="cluster">' + c.name + '</p>' +
+               '<p>' + c.body + '</p>' +
+               '<h3>What this commits you to</h3><ul class="entail">' +
+               c.ent.map(function(e){ return '<li>' + e + '</li>'; }).join('') +
+               '</ul>';
+    if(s.length){
+      html += s.map(function(t){
+        return '<div class="strain"><span class="lbl">Strain in your position</span><p>' + t + '</p></div>';
+      }).join('');
+    } else {
+      html += '<div class="strain" style="border-left-color:var(--ochre);background:rgba(210,169,58,.07)">' +
+              '<span class="lbl" style="color:var(--ochre)">No internal strain detected</span>' +
+              '<p>Your four answers are mutually consistent. Coherence is not correctness — the next test is exegetical: Ex 3:14, 1 Sam 15, Ps 90, Isa 46, and Rom 11:33–36 all get a vote before the system does.</p></div>';
+    }
+    readout.innerHTML = html;
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
