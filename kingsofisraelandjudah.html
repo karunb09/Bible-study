@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Kings of Israel &amp; Judah — An Interactive Chronicle</title>
+<meta name="description" content="An interactive, proportional chronology of every king from Saul to the exile: reigns, parents, verdicts, trajectories, prophets, and honest notes on the numbers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#171310;
+  --ink-deep:#100d0a;
+  --panel:#221c16;
+  --panel-2:#2a2219;
+  --line:#3a2f24;
+  --parch:#eadfc9;
+  --parch-dim:#b9ac93;
+  --muted:#8d8172;
+  --faint:#5f5546;
+  --judah:#c8a24b;
+  --judah-dim:#8a7136;
+  --israel:#7fa08c;
+  --israel-dim:#55705f;
+  --good:#7f9b5a;
+  --evil:#a8503f;
+  --mixed:#c08a3e;
+  --focus:#e6c877;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+/* Gutter geometry: three prophet lanes + the dynasty band. Media queries
+   below shrink these together so the rails never fall off the page. */
+:root{--gut:72px;--lane-pitch:17px;--lane-w:16px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  background:var(--ink);
+  color:var(--parch);
+  font-family:'Alegreya',Georgia,serif;
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--judah)}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+
+/* ---------- Header ---------- */
+header{
+  padding:64px 0 34px;
+  background:
+    radial-gradient(1100px 420px at 50% -160px, #2b2318 0%, transparent 70%),
+    var(--ink);
+  border-bottom:1px solid var(--line);
+}
+.eyebrow{
+  font-family:'Alegreya Sans',sans-serif;
+  font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:14px;
+}
+h1{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-weight:600;font-size:clamp(38px,6.4vw,66px);line-height:1.04;
+  letter-spacing:.005em;
+}
+h1 .of{font-style:italic;font-weight:500;color:var(--parch-dim)}
+h1 .j{color:var(--judah)} h1 .i{color:var(--israel)}
+.thesis{
+  max-width:62ch;margin-top:18px;color:var(--parch-dim);font-size:18px;
+}
+.thesis strong{color:var(--parch);font-weight:500}
+.header-facts{
+  display:flex;gap:26px;flex-wrap:wrap;margin-top:26px;
+  font-family:'Alegreya Sans',sans-serif;font-size:13px;color:var(--muted);
+}
+.header-facts b{display:block;font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:600;color:var(--parch);line-height:1.15}
+.header-facts .hf-j b{color:var(--judah)}
+.header-facts .hf-i b{color:var(--israel)}
+
+/* ---------- Controls ---------- */
+.controls{
+  position:sticky;top:0;z-index:40;
+  background:#131009;
+  background:color-mix(in srgb, var(--ink) 92%, black);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);
+  padding:10px 0;
+}
+.controls-in{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{
+  font-family:'Alegreya Sans',sans-serif;font-size:12.5px;letter-spacing:.03em;
+  padding:6px 12px;border:1px solid var(--line);border-radius:999px;
+  color:var(--parch-dim);background:var(--panel);
+  transition:border-color .15s,color .15s;
+}
+.chip:hover{border-color:var(--muted)}
+.chip[aria-pressed="true"]{color:var(--ink);font-weight:700}
+.chip[data-f="all"][aria-pressed="true"]{background:var(--parch);border-color:var(--parch)}
+.chip[data-f="good"][aria-pressed="true"]{background:var(--good);border-color:var(--good)}
+.chip[data-f="evil"][aria-pressed="true"]{background:var(--evil);border-color:var(--evil)}
+.chip[data-f="turned"][aria-pressed="true"]{background:linear-gradient(135deg,var(--good),var(--evil));border-color:var(--mixed)}
+.chip[data-f="mixed"][aria-pressed="true"]{background:var(--mixed);border-color:var(--mixed)}
+.chip-sep{width:1px;height:20px;background:var(--line);margin:0 4px}
+.chip.toggle[aria-pressed="true"]{background:var(--panel-2);color:var(--parch);border-color:var(--muted)}
+.chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+
+/* ---------- Legend ---------- */
+.legend{
+  display:flex;gap:18px;flex-wrap:wrap;
+  font-family:'Alegreya Sans',sans-serif;font-size:12.5px;color:var(--muted);
+  padding:18px 0 6px;
+}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:7px}
+.legend .sw.good{background:var(--good)}
+.legend .sw.evil{background:var(--evil)}
+.legend .sw.turned{background:linear-gradient(180deg,var(--good) 0%,var(--evil) 100%)}
+.legend .sw.repent{background:linear-gradient(180deg,var(--evil) 0%,var(--good) 100%)}
+.legend .sw.mixed{background:var(--mixed)}
+.legend .sw.rival{background:repeating-linear-gradient(45deg,#5e2e23,#5e2e23 4px,#7c3b2e 4px,#7c3b2e 8px)}
+.legend .dag{color:var(--parch-dim);font-size:14px;margin-right:6px}
+
+/* ---------- Timeline ---------- */
+.tl-section{padding:8px 0 30px}
+.tl-heads{
+  display:grid;grid-template-columns:1fr 84px 1fr;gap:0 12px;
+  max-width:1020px;margin:0 auto 6px;padding:0 var(--gut);
+  font-family:'Alegreya Sans',sans-serif;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+}
+.tl-heads .hd{padding:8px 4px}
+.tl-heads .hd small{display:block;letter-spacing:.06em;text-transform:none;font-size:11.5px;color:var(--muted);margin-top:2px}
+.hd-j{color:var(--judah);text-align:right}
+.hd-i{color:var(--israel)}
+/* The gutter lives INSIDE this box, so a narrow viewport shrinks the
+   timeline instead of cutting the rails off. It is sized to hold three
+   prophet lanes plus the dynasty band. */
+.tl-outer{
+  position:relative;max-width:1020px;margin:0 auto;padding:0 var(--gut);
+}
+.tl{
+  position:relative;
+  display:grid;grid-template-columns:1fr 84px 1fr;gap:0 12px;
+}
+.col{position:relative}
+.spine{position:relative}
+.spine-line{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line)}
+.tick{
+  position:absolute;left:0;right:0;text-align:center;
+  font-family:'Alegreya Sans',sans-serif;font-size:11px;color:var(--faint);
+  transform:translateY(-50%);
+  background:var(--ink);padding:1px 0;
+}
+.tick.major{color:var(--muted)}
+
+/* king block */
+.k{
+  position:absolute;left:0;right:0;
+  border-radius:4px;
+  border:1px solid rgba(0,0,0,.35);
+  padding:2px 8px;
+  display:flex;align-items:center;gap:6px;
+  overflow:hidden;
+  color:#14110c;
+  font-family:'Alegreya Sans',sans-serif;
+  cursor:pointer;text-align:left;
+  transition:opacity .2s, filter .15s, transform .12s;
+  box-shadow:0 1px 0 rgba(0,0,0,.4);
+}
+.k:hover{filter:brightness(1.12);transform:translateX(0) scale(1.012);z-index:5}
+.k .nm{font-weight:700;font-size:13px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k .yr{font-size:10.5px;opacity:.75;white-space:nowrap}
+.k .dg{font-size:12px;opacity:.85;margin-left:auto;flex:none}
+.k.v-good{background:var(--good)}
+.k.v-evil{background:var(--evil)}
+.k.v-turned{background:linear-gradient(180deg,var(--good) 0%,var(--good) 22%,var(--evil) 78%,var(--evil) 100%)}
+.k.v-repent{background:linear-gradient(180deg,var(--evil) 0%,var(--evil) 30%,var(--good) 85%,var(--good) 100%)}
+.k.v-mixed{background:var(--mixed)}
+.k.tiny{padding:0 8px}
+.k.tiny .yr{display:none}
+.k.rival{
+  left:52%;right:0;z-index:4;
+  background:repeating-linear-gradient(45deg,#5e2e23,#5e2e23 5px,#7c3b2e 5px,#7c3b2e 10px);
+  color:var(--parch-dim);
+  border-left:1px solid rgba(0,0,0,.35) !important;
+}
+.k.rival .nm{font-size:11px;font-weight:500}
+.col-j .k{border-left:3px solid var(--judah)}
+.col-i .k{border-left:3px solid var(--israel)}
+
+/* united band */
+#tl > .k{border-left:3px solid var(--parch-dim)}
+.united-label{
+  position:absolute;left:0;right:0;text-align:center;
+  font-family:'Alegreya Sans',sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+  transform:translateY(-130%);
+}
+
+/* schism marker */
+.schism, .fall{
+  position:absolute;left:0;right:0;pointer-events:none;
+  border-top:1px dashed var(--muted);
+}
+.schism .lb, .fall .lb{
+  position:absolute;top:2px;
+  font-family:'Alegreya Sans',sans-serif;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  background:var(--ink);padding:0 6px;
+}
+.fall-i{border-color:var(--israel-dim)} .fall-i .lb{color:var(--israel)}
+.fall-j{border-color:var(--judah-dim)} .fall-j .lb{color:var(--judah)}
+.exile-ghost{
+  position:absolute;left:0;right:0;border-radius:4px;
+  background:repeating-linear-gradient(45deg,transparent,transparent 6px,#2a231c 6px,#2a231c 7px);
+  border:1px dashed var(--line);
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-family:'Alegreya Sans',sans-serif;font-size:11.5px;color:var(--faint);
+  padding:8px;line-height:1.45;
+}
+
+/* dynasty bands (Israel) */
+.dyn-layer{position:absolute;top:0;bottom:0;right:2px;width:16px;display:none;pointer-events:none}
+.tl-outer.show-dyn .dyn-layer{display:block}
+.dyn{
+  position:absolute;left:0;width:14px;border-radius:3px;overflow:hidden;
+  border:1px solid var(--israel-dim);
+  background:rgba(127,160,140,.14);background:color-mix(in srgb, var(--israel) 14%, transparent);
+}
+.dyn span{
+  position:absolute;top:4px;left:50%;transform:translateX(-50%);
+  writing-mode:vertical-rl;line-height:1;
+  font-family:'Alegreya Sans',sans-serif;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--israel);white-space:nowrap;
+}
+.dyn-layer-j{position:absolute;top:0;bottom:0;left:2px;width:16px;display:none;pointer-events:none}
+.tl-outer.show-dyn .dyn-layer-j{display:block}
+.dyn-j{
+  position:absolute;right:0;width:14px;border-radius:3px;overflow:hidden;
+  border:1px solid var(--judah-dim);
+  background:rgba(200,162,75,.12);background:color-mix(in srgb, var(--judah) 12%, transparent);
+}
+.dyn-j span{
+  position:absolute;top:4px;left:50%;transform:translateX(-50%);
+  writing-mode:vertical-rl;line-height:1;
+  font-family:'Alegreya Sans',sans-serif;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--judah);white-space:nowrap;
+}
+
+/* prophets — each .pr fills its layer; a ::before edge draws the rail
+   against the column, and the name sits just outboard of it. Keeping the
+   label inside the layer box means it can never spill off the page. */
+.pr-layer{position:absolute;top:0;bottom:0;display:none;pointer-events:none}
+.tl-outer.show-pr .pr-layer{display:block}
+.pr-layer-j{left:0;right:auto;width:var(--gut)}
+.pr-layer-i{right:0;left:auto;width:var(--gut)}
+.pr{position:absolute;width:var(--lane-w)}
+.pr-layer-j .pr{right:0}
+.pr-layer-i .pr{left:0}
+.pr::before{content:"";position:absolute;top:0;bottom:0;width:3px;border-radius:2px}
+.pr-layer-j .pr::before{right:0;background:var(--judah-dim)}
+.pr-layer-i .pr::before{left:0;background:var(--israel-dim)}
+.pr span{
+  position:absolute;top:0;
+  writing-mode:vertical-rl;line-height:1;
+  font-family:'Alegreya Sans',sans-serif;font-size:9.5px;letter-spacing:.1em;
+  color:var(--muted);white-space:nowrap;
+}
+.pr-layer-j .pr span{right:4px}
+.pr-layer-i .pr span{left:4px}
+
+/* filter dimming */
+.tl-outer[data-f="good"] .k:not(.v-good),
+.tl-outer[data-f="evil"] .k:not(.v-evil),
+.tl-outer[data-f="turned"] .k:not(.v-turned),
+.tl-outer[data-f="mixed"] .k:not(.v-mixed):not(.v-repent){
+  opacity:.13;
+}
+
+.dyn-key{
+  max-width:1020px;margin:14px auto 0;padding:0 var(--gut);
+}
+.dyn-key h3{
+  font-family:'Alegreya Sans',sans-serif;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:8px;
+}
+.dyn-key ol{list-style:none;display:flex;flex-wrap:wrap;gap:4px 10px}
+.dyn-key li{
+  font-family:'Alegreya Sans',sans-serif;font-size:12px;color:var(--parch-dim);
+  border-left:3px solid var(--israel-dim);padding:1px 0 1px 7px;
+}
+.dyn-key li b{font-weight:700;color:var(--israel)}
+.dyn-key li i{font-style:normal;color:var(--faint)}
+.dyn-key li.brief b{color:var(--evil)}
+.dyn-key li.brief{border-left-color:var(--evil)}
+.dyn-key-j{
+  margin-top:9px;font-size:12.5px;color:var(--muted);
+  border-left:3px solid var(--judah-dim);padding-left:8px;max-width:62ch;
+}
+.dyn-key-j b{color:var(--judah);font-weight:700}
+.dyn-key-j i{font-style:normal;color:var(--faint)}
+.tl-note{
+  max-width:900px;margin:14px auto 0;
+  font-family:'Alegreya Sans',sans-serif;font-size:12.5px;color:var(--faint);
+}
+
+/* ---------- Detail panel ---------- */
+.overlay{
+  position:fixed;inset:0;z-index:100;display:none;
+  background:rgba(10,8,6,.72);
+}
+.overlay.open{display:block}
+.card{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(620px, calc(100% - 28px));
+  max-height:min(84vh, 760px);
+  overflow-y:auto;overscroll-behavior:contain;
+  background:linear-gradient(180deg,var(--panel-2),var(--panel));
+  border:1px solid var(--line);border-radius:12px;
+  padding:26px 26px 24px;
+  box-shadow:0 24px 70px rgba(0,0,0,.55);
+}
+@media (max-width:640px){
+  .card{left:0;right:0;top:auto;bottom:0;transform:none;width:100%;
+    max-height:88vh;border-radius:16px 16px 0 0;padding:22px 18px 30px}
+}
+.card .close{
+  position:sticky;top:0;float:right;margin:-6px -6px 0 0;
+  width:34px;height:34px;border-radius:50%;
+  background:var(--panel);border:1px solid var(--line);
+  color:var(--parch-dim);font-size:17px;line-height:1;
+}
+.card .close:hover{color:var(--parch);border-color:var(--muted)}
+.c-kingdom{
+  font-family:'Alegreya Sans',sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  margin-bottom:8px;
+}
+.c-kingdom.kj{color:var(--judah)} .c-kingdom.ki{color:var(--israel)} .c-kingdom.ku{color:var(--parch-dim)}
+.c-name{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:36px;line-height:1.05}
+.c-aka{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:18px;color:var(--muted);margin-top:2px}
+.c-verdict{
+  display:inline-block;margin-top:12px;
+  font-family:'Alegreya Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:.04em;
+  color:#14110c;border-radius:999px;padding:4px 12px;
+}
+.c-verdict.v-good{background:var(--good)} .c-verdict.v-evil{background:var(--evil)}
+.c-verdict.v-turned{background:linear-gradient(90deg,var(--good),var(--evil))}
+.c-verdict.v-repent{background:linear-gradient(90deg,var(--evil),var(--good))}
+.c-verdict.v-mixed{background:var(--mixed)}
+.c-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;
+  margin:18px 0 4px;padding:16px 0;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+.c-grid .f{min-width:0}
+.c-grid .f small{
+  display:block;font-family:'Alegreya Sans',sans-serif;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;
+}
+.c-grid .f span{font-size:15.5px;line-height:1.4}
+.c-grid .f .unrec{color:var(--faint);font-style:italic}
+.c-sum{margin-top:14px;font-size:16px;color:var(--parch)}
+.c-events{margin:14px 0 0;list-style:none}
+.c-events li{
+  position:relative;padding-left:18px;margin-bottom:7px;font-size:15px;color:var(--parch-dim);
+}
+.c-events li::before{content:"";position:absolute;left:2px;top:9px;width:6px;height:6px;border-radius:50%;background:var(--faint)}
+.c-death{margin-top:14px;font-size:15px;color:var(--parch-dim)}
+.c-death b{font-family:'Alegreya Sans',sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500;display:block;margin-bottom:2px}
+.c-note{
+  margin-top:16px;padding:12px 14px;border-left:3px solid var(--mixed);
+  background:rgba(192,138,62,.08);background:color-mix(in srgb, var(--mixed) 8%, transparent);
+  border-radius:0 6px 6px 0;
+  font-size:14.5px;color:var(--parch-dim);
+}
+.c-note b{color:var(--mixed);font-family:'Alegreya Sans',sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;display:block;margin-bottom:3px}
+.c-refs{margin-top:16px;font-family:'Alegreya Sans',sans-serif;font-size:12.5px;color:var(--muted)}
+.c-refs b{color:var(--parch-dim);font-weight:500}
+.c-navrow{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
+.c-navrow button{
+  font-family:'Alegreya Sans',sans-serif;font-size:12.5px;color:var(--parch-dim);
+  border:1px solid var(--line);border-radius:8px;padding:7px 12px;background:var(--panel);
+}
+.c-navrow button:hover{border-color:var(--muted);color:var(--parch)}
+.c-navrow button:disabled{opacity:.3;cursor:default}
+
+/* ---------- Insights ---------- */
+.insights{border-top:1px solid var(--line);padding:56px 0 30px;background:var(--ink-deep)}
+.insights h2, .h2{
+  font-family:'Cormorant Garamond',serif;font-weight:600;font-size:clamp(28px,4vw,40px);
+  margin-bottom:8px;
+}
+.insights .lead{color:var(--parch-dim);max-width:64ch;margin-bottom:30px}
+.ins-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.ins{
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:22px 22px 20px;
+}
+.ins h3{
+  font-family:'Cormorant Garamond',serif;font-weight:600;font-size:23px;line-height:1.15;margin-bottom:10px;
+}
+.ins h3 em{font-style:italic;color:var(--parch-dim)}
+.ins p{font-size:15px;color:var(--parch-dim);margin-bottom:10px}
+.ins p:last-child{margin-bottom:0}
+.ins .stat{
+  font-family:'Alegreya Sans',sans-serif;font-size:12px;color:var(--muted);
+  border-top:1px solid var(--line);margin-top:14px;padding-top:10px;
+}
+.ins p b{color:var(--parch);font-weight:500}
+.ins .kref{color:var(--judah);text-decoration:underline dotted;cursor:pointer;background:none;border:none;padding:0;font:inherit}
+.ins .kref.i{color:var(--israel)}
+
+/* ---------- Footer ---------- */
+footer{border-top:1px solid var(--line);padding:34px 0 60px}
+footer p{font-size:14px;color:var(--muted);max-width:70ch;margin-bottom:10px}
+footer .lic{font-family:'Alegreya Sans',sans-serif;font-size:12px;color:var(--faint)}
+
+/* Mid widths: shrink the whole gutter system together. */
+@media (max-width:960px){
+  :root{--gut:64px;--lane-pitch:15px;--lane-w:14px}
+  .pr span{font-size:9px}
+}
+
+@media (max-width:700px){
+  :root{--gut:58px;--lane-pitch:14px;--lane-w:13px}
+  body{font-size:16px}
+  .tl-heads{grid-template-columns:1fr 44px 1fr;gap:0 5px}
+  .tl-heads .hd{padding:8px 0;font-size:11px}
+  .tl-heads .hd small{font-size:10.5px}
+  .tl{grid-template-columns:1fr 44px 1fr;gap:0 5px}
+  .tick{font-size:10px}
+  .k{padding:1px 5px;border-radius:3px}
+  .k .nm{font-size:11px}
+  .k .yr{display:none}
+  .k .dg{font-size:10px}
+  /* Prophet names stay visible on phones — they are the point of the layer. */
+  .pr span{font-size:8.5px;letter-spacing:.03em}
+  .pr-layer-j .pr span{right:3px}
+  .pr-layer-i .pr span{left:3px}
+  .dyn-layer{right:2px;width:14px}
+  .dyn-layer-j{left:2px;width:14px}
+  .dyn, .dyn-j{width:12px}
+  .dyn span, .dyn-j span{font-size:8.5px;letter-spacing:.06em}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">A chronicle in two columns · Saul to the exile</div>
+    <h1>The Kings <span class="of">of</span> <span class="i">Israel</span> <span class="of">&amp;</span> <span class="j">Judah</span></h1>
+    <p class="thesis">Every reign drawn to scale, every ruler judged by the books of Kings and Chronicles. <strong>The shape of the two columns is itself the argument:</strong> one kingdom keeps a single royal house for three and a half centuries; the other burns through nine and falls first. Tap any reign to open its record.</p>
+    <div class="header-facts">
+      <div><b>42</b>rulers, Saul to Zedekiah</div>
+      <div class="hf-j"><b>1</b>dynasty in Judah</div>
+      <div class="hf-i"><b>9</b>dynasties in Israel</div>
+      <div><b>0</b>northern kings called good</div>
+      <div><b>8</b>southern kings who "did right"</div>
+    </div>
+  </div>
+</header>
+
+<nav class="controls" aria-label="Timeline filters">
+  <div class="wrap controls-in">
+    <button class="chip" data-f="all" aria-pressed="true">All rulers</button>
+    <button class="chip" data-f="good" aria-pressed="false"><span class="dot" style="background:var(--good)"></span>Did right</button>
+    <button class="chip" data-f="evil" aria-pressed="false"><span class="dot" style="background:var(--evil)"></span>Did evil</button>
+    <button class="chip" data-f="turned" aria-pressed="false"><span class="dot" style="background:linear-gradient(135deg,var(--good),var(--evil))"></span>Began well, turned</button>
+    <button class="chip" data-f="mixed" aria-pressed="false"><span class="dot" style="background:var(--mixed)"></span>Mixed &amp; reversed</button>
+    <span class="chip-sep" aria-hidden="true"></span>
+    <button class="chip toggle" id="tg-dyn" aria-pressed="false">Dynasties</button>
+    <button class="chip toggle" id="tg-pr" aria-pressed="false">Prophets</button>
+  </div>
+</nav>
+
+<main>
+  <section class="tl-section">
+    <div class="wrap">
+      <div class="legend" aria-hidden="true">
+        <span><span class="sw good"></span>Did right in the eyes of the LORD</span>
+        <span><span class="sw evil"></span>Did evil</span>
+        <span><span class="sw turned"></span>Began well, ended badly</span>
+        <span><span class="sw repent"></span>Began in evil, repented</span>
+        <span><span class="sw mixed"></span>Mixed verdict</span>
+        <span><span class="sw rival"></span>Rival claimant, never sole king (Tibni only)</span>
+        <span><span class="dag">†</span>Met a violent end — assassination, coup, or battle</span>
+      </div>
+
+      <div class="tl-heads">
+        <div class="hd hd-j">Judah<small>House of David · falls 586 BC</small></div>
+        <div></div>
+        <div class="hd hd-i">Israel<small>Nine houses · falls 722 BC</small></div>
+      </div>
+
+      <div class="tl-outer" id="tlOuter" data-f="all">
+        <div class="tl" id="tl">
+          <div class="col col-j" id="colJ"></div>
+          <div class="spine" id="spine"><div class="spine-line"></div></div>
+          <div class="col col-i" id="colI"></div>
+        </div>
+        <div class="dyn-layer" id="dynLayer"></div>
+        <div class="dyn-layer-j" id="dynLayerJ"></div>
+        <div class="pr-layer pr-layer-j" id="prJ"></div>
+        <div class="pr-layer pr-layer-i" id="prI"></div>
+      </div>
+
+      <div class="dyn-key">
+        <h3>The nine houses of Israel</h3>
+        <ol>
+          <li><b>Jeroboam</b> <i>931–909</i></li>
+          <li><b>Baasha</b> <i>909–885</i></li>
+          <li class="brief"><b>Zimri</b> <i>7 days</i></li>
+          <li><b>Omri</b> <i>885–841</i></li>
+          <li><b>Jehu</b> <i>841–752</i></li>
+          <li class="brief"><b>Shallum</b> <i>1 month</i></li>
+          <li><b>Menahem</b> <i>752–740</i></li>
+          <li><b>Pekah</b> <i>740–732</i></li>
+          <li><b>Hoshea</b> <i>732–722</i></li>
+        </ol>
+        <p class="dyn-key-j">Judah runs one house throughout — broken once, by <b>Athaliah</b> <i>(841–835)</i>, who was not a Davidide and took the throne by killing the heirs. Houses in red, and Athaliah, are too short-lived to label on the chart itself.</p>
+      </div>
+
+      <p class="tl-note">Blocks are proportional to reign length, except that the time-scale stretches locally around reigns shorter than about two years so they stay readable — both columns share the same scale, so kings level with each other really did reign at the same time. Year ticks are placed exactly. Dates follow Edwin Thiele's widely used chronology — see <em>Reading the numbers honestly</em> below for what that involves.</p>
+    </div>
+  </section>
+
+  <section class="insights">
+    <div class="wrap">
+      <h2>What the columns teach</h2>
+      <p class="lead">Patterns the narrators of Kings and Chronicles built into the record — some stated outright, some visible only when the whole line is laid side by side.</p>
+      <div class="ins-grid" id="insGrid">
+
+        <article class="ins">
+          <h3>The north's unbroken zero</h3>
+          <p>Twenty rulers sat on Israel's throne after the schism. <b>Not one receives the approval formula.</b> The refrain instead is that each "walked in the sins of Jeroboam son of Nebat" — the state calf-shrines at Bethel and Dan that made worship a tool of politics from the kingdom's first year.</p>
+          <p>The lesson the narrator draws is institutional, not just personal: a kingdom founded on a corrupted altar never produced a reforming king. Judah, with the temple, produced eight.</p>
+          <p class="stat">2 Kings 17:21–23 is the narrator's own post-mortem on the northern kingdom.</p>
+        </article>
+
+        <article class="ins">
+          <h3>The finishing problem</h3>
+          <p>The most repeated tragedy in the record is not the evil king but the good one who does not finish. <b>Saul, Solomon, Asa, Joash, Amaziah, and Uzziah all began in obedience and ended in failure</b> — and the mechanism is named each time: pride after success (Uzziah, "when he was strong," 2 Chr 26:16), the death of a mentor (Joash after Jehoiada), success itself hardening into self-reliance (Asa's treaty, Amaziah's trophies-turned-gods).</p>
+          <p>Even Hezekiah, one of the two best kings, stumbles late (2 Chr 32:25). Chronicles' implicit thesis: beginnings predict nothing; the verdict is written at the end.</p>
+          <p class="stat">Six of the gradient blocks on the timeline run green to red. Only one runs the other way.</p>
+        </article>
+
+        <article class="ins">
+          <h3>Manasseh's inversion</h3>
+          <p>The worst king in Judah's history — child sacrifice, altars in the temple, Jerusalem filled "with innocent blood" — is also the record's one great reversal. Taken in chains to Babylon, <b>Manasseh humbled himself, prayed, and was restored</b>, then spent his remaining years dismantling what he had built (2 Chr 33:10–17).</p>
+          <p>Be honest with a class about this: <b>2 Kings never mentions the repentance.</b> Kings, written to explain the exile, needs Manasseh as its final cause (2 Kgs 21:11–15; 24:3); Chronicles, written to a returned community, needs him as proof that no one is beyond restoration. Same king, two inspired purposes — a working example of why we read both books.</p>
+        </article>
+
+        <article class="ins">
+          <h3>The queen mothers</h3>
+          <p>Judah's accession formula almost always names the king's mother — Naamah, Zibiah, Jecoliah, Hephzibah, Jedidah — while Israel's almost never does. That is not trivia. The <b>gebirah</b> (great lady, queen mother) held a recognized office in Judah: Bathsheba receives a throne at Solomon's right hand (1 Kgs 2:19), and Asa's first reform act is to depose his own grandmother from the office for idolatry (1 Kgs 15:13).</p>
+          <p>Athaliah is the office's dark proof: a queen mother powerful enough to seize the throne itself for six years. And the two Judahite kings whose mothers go conspicuously unnamed — Jehoram and Ahaz — are the two most deeply compromised by foreign alliance. The formula is doing quiet theological work.</p>
+        </article>
+
+        <article class="ins">
+          <h3>One lamp, nine houses</h3>
+          <p>Israel's column changes color of house nine times: seven kings assassinated, one suicide in a burning palace, two houses that lasted a single month or less. Judah's column is one gold thread from David to the exile, interrupted only by Athaliah's six stolen years — and even then an infant heir survives in the temple.</p>
+          <p>The narrator names the reason: for David's sake God left his house <b>"a lamp in Jerusalem"</b> (1 Kgs 11:36; 15:4; 2 Kgs 8:19). The two columns are the Davidic covenant (2 Sam 7:12–16) drawn as a picture — and the reason the exile ends the kingdom but not the promise. The New Testament's opening line picks the thread back up: "the son of David" (Matt 1:1), through Jehoiachin's own line (Matt 1:11–12).</p>
+          <p class="stat">Turn on <em>Dynasties</em> above to count them: nine bands on the right, one unbroken band on the left. Two of the nine — Zimri's and Shallum's — are hairlines, because that is how long they lasted.</p>
+        </article>
+
+        <article class="ins">
+          <h3>Reading the numbers honestly</h3>
+          <p>Add up the reign lengths naively and the two kingdoms' totals disagree by decades. The standard resolution (Edwin Thiele, <em>The Mysterious Numbers of the Hebrew Kings</em>) shows the two courts used <b>different calendars and different counting rules</b> (accession-year vs. non-accession-year), and that co-regencies were common — Uzziah overlaps Amaziah by ~25 years; Jotham, Ahaz, Hezekiah, and Manasseh all overlap their fathers. Anchor dates come from Assyrian records: Qarqar (853), Jehu's tribute on the Black Obelisk (841), Samaria's fall (722).</p>
+          <p>Real textual difficulties exist and should be named, not hidden: 1 Sam 13:1 is damaged (Saul's "forty years" comes from Acts 13:21); Ahaziah of Judah is 22 in Kings, 42 in most Chronicles manuscripts; Abijah's mother is given two names. None of these touch the story's substance — but pretending they aren't there teaches students to panic when they find them.</p>
+          <p class="stat">Also watch the name collisions: both kingdoms have a Jehoram/Joram, an Ahaziah, a Joash/Jehoash, and a Jehoahaz — several reigning at nearly the same time.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Sources.</strong> Primary record: 1–2 Samuel, 1–2 Kings, 1–2 Chronicles, with the writing prophets alongside. Dates follow Thiele's chronology as refined by later scholarship; where scholars differ (mostly by a year or two, and on Pekah's overlapping claim), the detail cards say so. Verdicts quoted or paraphrased are the biblical narrators' own, not this page's editorializing.</p>
+    <p class="lic">Part of the Bible-study resource collection · CC-BY-SA-4.0 · Standalone HTML, no dependencies beyond optional Google Fonts.</p>
+  </div>
+</footer>
+
+<!-- Detail overlay -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="cName">
+  <div class="card" id="card">
+    <button class="close" id="closeBtn" aria-label="Close">&times;</button>
+    <div class="c-kingdom" id="cKingdom"></div>
+    <div class="c-name" id="cName"></div>
+    <div class="c-aka" id="cAka"></div>
+    <span class="c-verdict" id="cVerdict"></span>
+    <div class="c-grid" id="cGrid"></div>
+    <p class="c-sum" id="cSum"></p>
+    <ul class="c-events" id="cEvents"></ul>
+    <div class="c-death" id="cDeath"></div>
+    <div class="c-note" id="cNote" style="display:none"></div>
+    <div class="c-refs" id="cRefs"></div>
+    <div class="c-navrow">
+      <button id="prevBtn">&larr; Previous reign</button>
+      <button id="nextBtn">Next reign &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   Data. Layout years are BC (positive numbers), following
+   Thiele's chronology; where a co-regency exists, `s` is the
+   start of sole reign used for drawing, and the true accession
+   is disclosed in the entry itself.
+   v: good | evil | turned | repent | mixed
+   ============================================================ */
+const KINGS = [
+/* ---- The United Monarchy ---- */
+{id:"saul", n:"Saul", aka:"", k:"united", dyn:"House of Saul", s:1050, e:1010, r:"c. 40 years", age:null,
+ f:"Kish, a Benjaminite", m:"Not recorded",
+ v:"turned", vl:"Began well — ended rejected",
+ sum:"Israel's first king, chosen when the people demanded a monarch \"like all the nations.\" He began humble and Spirit-empowered, delivering Jabesh-gilead; he ended paranoid, disobedient, and abandoned, hunting David through the wilderness.",
+ ev:["Anointed privately by Samuel, confirmed publicly at Mizpah (1 Sam 10)",
+     "Rescues Jabesh-gilead; kingship renewed at Gilgal (1 Sam 11)",
+     "Unlawful sacrifice at Gilgal — the kingdom will not endure (1 Sam 13)",
+     "Spares Agag and the Amalekite spoil; rejected as king (1 Sam 15)",
+     "Consults the medium at Endor on the eve of his death (1 Sam 28)"],
+ death:"Wounded by Philistine archers on Mount Gilboa, he fell on his own sword; three sons, including Jonathan, died the same day (1 Sam 31).",
+ pr:"Samuel",
+ refs:"1 Samuel 9–31; 1 Chronicles 10",
+ note:"1 Samuel 13:1 is textually damaged in the Hebrew (\"Saul was ... years old, and reigned ... and two years\"). The forty-year figure comes from Acts 13:21 and Josephus. A good example to show students that manuscript problems are documented, not hidden."},
+
+{id:"david", n:"David", aka:"", k:"united", dyn:"House of David", s:1010, e:970, r:"40 years — 7½ in Hebron, 33 in Jerusalem", age:30,
+ f:"Jesse of Bethlehem", m:"Not recorded in Scripture (later Jewish tradition names her Nitzevet)",
+ v:"good", vl:"A man after God's own heart",
+ sum:"The shepherd-king against whom every later king is measured — \"as his father David had done\" becomes the standard formula. His greatness is not sinlessness (Bathsheba, Uriah, the census) but wholehearted covenant loyalty and real repentance when confronted.",
+ ev:["Anointed by Samuel while Saul still reigns (1 Sam 16)",
+     "Takes Jerusalem; brings up the ark (2 Sam 5–6)",
+     "The Davidic covenant: an everlasting house and throne (2 Sam 7)",
+     "Sin with Bathsheba and the murder of Uriah; Nathan's confrontation and David's repentance (2 Sam 11–12; Psalm 51)",
+     "Absalom's revolt; the census and the plague; the threshing floor that becomes the temple site (2 Sam 15–24)"],
+ death:"Died in old age in Jerusalem after securing Solomon's succession against Adonijah's attempt (1 Kgs 1–2).",
+ pr:"Samuel, Nathan, Gad",
+ refs:"1 Samuel 16 – 1 Kings 2; 1 Chronicles 11–29",
+ note:"The narrators never soften David's crimes — 2 Samuel 11–12 is as unsparing as anything in ancient literature about a national founder. His \"good\" verdict rests on repentance and loyalty, not on a clean record; that distinction is the heart of the whole evaluation system."},
+
+{id:"solomon", n:"Solomon", aka:"also named Jedidiah, \"beloved of the LORD\"", k:"united", dyn:"House of David", s:970, e:931, r:"40 years", age:null,
+ f:"David", m:"Bathsheba",
+ v:"turned", vl:"Began in wisdom — ended in idolatry",
+ sum:"Asked God for wisdom and received it with wealth and peace besides; built the temple his father was denied. But the king who wrote the proverbs violated every royal command of Deuteronomy 17 — multiplied horses, silver, and wives — and the wives turned his heart. The kingdom tore in his son's hands as the stated consequence.",
+ ev:["Asks for a discerning heart at Gibeon (1 Kgs 3)",
+     "Builds and dedicates the temple; God's glory fills it (1 Kgs 6–8)",
+     "Wealth, fleet, and fame — the queen of Sheba's visit (1 Kgs 10)",
+     "700 wives and 300 concubines; high places for Chemosh and Molech built on the hill facing Jerusalem (1 Kgs 11:1–8)",
+     "Ahijah announces the coming schism; adversaries raised up (1 Kgs 11:9–40)"],
+ death:"Died in Jerusalem after forty years; the kingdom split within months of his son's accession.",
+ pr:"Nathan (early); Ahijah of Shiloh (late)",
+ refs:"1 Kings 1–11; 2 Chronicles 1–9",
+ note:"Chronicles omits Solomon's fall entirely — its portrait ends at the temple's glory. Kings gives the whole arc. Reading only one book gives you only half the man; that is by design, and worth showing a class directly."},
+
+/* ---- Judah ---- */
+{id:"rehoboam", n:"Rehoboam", aka:"", k:"judah", dyn:"House of David", s:931, e:913, r:"17 years", age:41,
+ f:"Solomon", m:"Naamah the Ammonite",
+ v:"evil", vl:"Judah did evil in the sight of the LORD — the nation, not the king",
+ sum:"Rejected the elders' counsel for his peers' bravado — \"my little finger is thicker than my father's waist\" — and lost ten tribes in a sentence. Under him Judah built high places, sacred pillars, and Asherim; male cult prostitution appears in the land.",
+ ev:["The assembly at Shechem; the kingdom divides (1 Kgs 12)",
+     "Forbidden by Shemaiah the prophet from war against the north (1 Kgs 12:22–24)",
+     "Shishak of Egypt sacks Jerusalem and strips the temple's gold shields — replaced with bronze (1 Kgs 14:25–28)"],
+ death:"Died in Jerusalem; buried in the city of David.",
+ pr:"Shemaiah",
+ refs:"1 Kings 12; 14:21–31; 2 Chronicles 10–12",
+ note:"The verdict formula changes subject here, and only here. Everywhere else Kings pronounces on the king; 1 Kgs 14:22 pronounces on the people — and holds the plural right through the verse: they provoked, their sins, they committed. The Greek tradition smooths the oddity by reading Rehoboam's name in place of Judah's, and Chronicles states it of him directly (2 Chr 12:14). Whether the Hebrew is spreading the blame for the schism generation or the Greek is correcting a scribal slip is genuinely open. His mother's nationality is stated twice in eleven verses (1 Kgs 14:21, 31) — the narrator quietly connecting Solomon's foreign marriages to the next generation's apostasy. Shishak's campaign is independently attested on the Bubastite Portal at Karnak."},
+
+{id:"abijah", n:"Abijah", aka:"called Abijam in Kings", k:"judah", dyn:"House of David", s:913, e:911, r:"3 years", age:null,
+ f:"Rehoboam", m:"Maacah daughter of Abishalom (2 Chr 13:2 has Micaiah daughter of Uriel)",
+ v:"evil", vl:"His heart was not wholly true",
+ sum:"Kings dismisses him in a paragraph: he walked in all his father's sins, and only for David's sake did God maintain a lamp in Jerusalem. Chronicles preserves one bright scene — a battlefield sermon appealing to God's covenant, and a victory won while outnumbered two to one.",
+ ev:["War with Jeroboam throughout his reign (1 Kgs 15:6–7)",
+     "The speech at Mount Zemaraim and defeat of Jeroboam's larger army (2 Chr 13)"],
+ death:"Died after three years; his son Asa succeeded him.",
+ pr:"—",
+ refs:"1 Kings 15:1–8; 2 Chronicles 13",
+ note:"The two books give his mother different names — likely one records her father and the other her grandfather, but honestly, we don't know. Kings judges his heart; Chronicles reports one faithful day. Both are true; a person can win a battle by faith and still not have a heart wholly true."},
+
+{id:"asa", n:"Asa", aka:"", k:"judah", dyn:"House of David", s:911, e:870, r:"41 years", age:null,
+ f:"Abijah", m:"Formula names Maacah — his grandmother, retained as queen mother, whom he deposed",
+ v:"turned", vl:"Right in the eyes of the LORD — but the last years faltered",
+ sum:"Judah's first reformer: expelled the cult prostitutes, destroyed idols, deposed his own grandmother from the office of queen mother for her Asherah image, and cried to God against an overwhelming invasion. Then, in year 36, threatened by Israel, he bought Syrian help with temple treasure instead — and never turned back.",
+ ev:["Removes idols and deposes Maacah the queen mother (1 Kgs 15:11–13)",
+     "Cries to the LORD and routs Zerah's enormous army (2 Chr 14:9–15)",
+     "Covenant renewal at Jerusalem under Azariah's preaching (2 Chr 15)",
+     "Buys Ben-hadad of Aram against Baasha with temple silver (2 Chr 16:1–6)",
+     "Imprisons Hanani the seer for rebuking the alliance; in his disease seeks physicians but not the LORD (2 Chr 16:7–12)"],
+ death:"Died of a severe foot disease in his 41st year; buried with honor in Jerusalem.",
+ pr:"Azariah son of Oded; Hanani",
+ refs:"1 Kings 15:9–24; 2 Chronicles 14–16",
+ note:"Kings praises Asa without qualification — \"wholly true all his days\" (1 Kgs 15:14). Chronicles indicts his final five years. This is the sharpest evaluative tension between the two books, and the honest reading is that Kings judges the reign's overall character while Chronicles refuses to let a bad ending go unrecorded."},
+
+{id:"jehoshaphat", n:"Jehoshaphat", aka:"", k:"judah", dyn:"House of David", s:870, e:848, r:"25 years (co-regent with Asa from 873)", age:35,
+ f:"Asa", m:"Azubah daughter of Shilhi",
+ v:"good", vl:"Walked in the way of Asa his father",
+ sum:"A genuinely good king with one persistent flaw: alliance with Ahab's house. He sent teaching Levites through the cities with the book of the law, appointed judges answerable to God, and prayed one of Scripture's great prayers before battle. But he married his heir to Ahab's daughter — and that one decision nearly extinguished David's line a generation later.",
+ ev:["Sends officials and Levites to teach the law city by city (2 Chr 17:7–9)",
+     "Joins Ahab at Ramoth-gilead despite Micaiah's warning; rebuked by Jehu the seer (2 Chr 18–19:3)",
+     "Appoints judges: \"you judge not for man but for the LORD\" (2 Chr 19)",
+     "The prayer of 2 Chronicles 20 — \"we do not know what to do, but our eyes are on you\" — and victory without a battle",
+     "Allies his son Jehoram to Athaliah, daughter of Ahab (2 Kgs 8:18, 26)"],
+ death:"Died in Jerusalem after 25 years; buried in the city of David.",
+ pr:"Micaiah son of Imlah; Jehu son of Hanani; Jahaziel; Eliezer",
+ refs:"1 Kings 22; 2 Chronicles 17–20",
+ note:"His good reign carries the seed of the century's worst crisis. Athaliah's massacre (see her entry) traces directly to this marriage alliance — the record's standing lesson that a faithful man's pragmatic compromises can outlive him."},
+
+{id:"jehoram-j", n:"Jehoram", aka:"also spelled Joram — distinct from Joram of Israel, his brother-in-law", k:"judah", dyn:"House of David", s:848, e:841, r:"8 years (co-regent from 853)", age:32,
+ f:"Jehoshaphat", m:"Not recorded — one of only two omissions in Judah's formula",
+ v:"evil", vl:"Walked in the way of the kings of Israel",
+ sum:"Married to Athaliah and made in Ahab's image, he opened his reign by murdering all six of his brothers. Edom and Libnah revolted; Philistines and Arabs sacked his house; Elijah's only recorded letter promised his end. He died of a prolonged bowel disease, and the epitaph is the coldest in the record.",
+ ev:["Kills his six brothers with the sword upon accession (2 Chr 21:4)",
+     "Marries Athaliah, daughter of Ahab; builds high places and leads Judah astray (2 Chr 21:6, 11)",
+     "Edom revolts and remains free (2 Kgs 8:20–22)",
+     "A letter from Elijah pronounces judgment (2 Chr 21:12–15)"],
+ death:"Died of an incurable disease of the bowels, \"to no one's regret\"; buried in the city of David but not in the tombs of the kings (2 Chr 21:19–20).",
+ pr:"Elijah (by letter); Obadiah possibly in this era",
+ refs:"2 Kings 8:16–24; 2 Chronicles 21",
+ note:"Only \"for the sake of David his servant\" was the house not destroyed — the lamp promise doing explicit work (2 Kgs 8:19) in the reign where the line most deserved to end."},
+
+{id:"ahaziah-j", n:"Ahaziah", aka:"the namesake of Ahaziah of Israel, his uncle", k:"judah", dyn:"House of David", s:841, e:841, r:"1 year", age:22,
+ f:"Jehoram", m:"Athaliah, granddaughter of Omri (daughter of Ahab)",
+ v:"evil", vl:"Walked in the ways of the house of Ahab",
+ sum:"His mother was his counselor \"to do wickedly\" (2 Chr 22:3). Visiting his wounded uncle Joram of Israel at Jezreel, he was caught in Jehu's purge of Ahab's house and killed — the southern king dying in the northern dynasty's judgment, because he had made himself part of it.",
+ ev:["Reigns one year under Athaliah's direction (2 Chr 22:2–4)",
+     "Joins Joram of Israel against Hazael at Ramoth-gilead (2 Kgs 8:28)",
+     "Killed while fleeing Jehu's coup (2 Kgs 9:27–28)"],
+ death:"Shot in his chariot at the ascent of Gur on Jehu's order; died at Megiddo; his servants carried him to Jerusalem for burial. †",
+ pr:"—",
+ refs:"2 Kings 8:25–29; 9:27–29; 2 Chronicles 22:1–9",
+ note:"2 Kings 8:26 makes him 22 at accession; most Hebrew manuscripts of 2 Chronicles 22:2 read 42 — which would make him older than his father. An evident copyist's error in the Chronicles transmission (some ancient versions read 22), and a clean classroom example of how such errors are identified."},
+
+{id:"athaliah", n:"Athaliah", aka:"queen regnant — the only non-Davidic ruler of Judah", k:"judah", dyn:"House of Omri (usurper)", s:841, e:835, r:"6 years", age:null,
+ f:"Ahab (called \"daughter of Omri,\" i.e. granddaughter)", m:"Not stated — plausibly Jezebel",
+ v:"evil", vl:"That wicked woman (2 Chr 24:7)",
+ sum:"When Jehu's purge killed her son, she killed her own grandchildren to take the throne — the one moment the Davidic line hung by a single life. The infant Joash was hidden in the temple by his aunt Jehosheba for six years while Athaliah reigned, until the priest Jehoiada crowned the boy beside a pillar and the house of David resumed.",
+ ev:["Destroys \"all the royal seed\" upon Ahaziah's death (2 Kgs 11:1)",
+     "Jehosheba hides the infant Joash and his nurse in the temple (2 Kgs 11:2–3)",
+     "Jehoiada's covenant and coup: the boy crowned, the law placed in his hands (2 Kgs 11:4–12)"],
+ death:"Seized as she cried \"Treason!\", led out of the temple precincts, and executed at the horse gate. †",
+ pr:"—",
+ refs:"2 Kings 11; 2 Chronicles 22:10–23:21",
+ note:"Athaliah is the stress test of 2 Samuel 7: the covenant line reduced to one hidden infant, and preserved. She is also the demonstration of why Judah's queen-mother office mattered enough for the accession formulas to keep naming names."},
+
+{id:"joash-j", n:"Joash", aka:"also spelled Jehoash — distinct from Jehoash of Israel, his contemporary", k:"judah", dyn:"House of David", s:835, e:796, r:"40 years", age:7,
+ f:"Ahaziah", m:"Zibiah of Beersheba",
+ v:"turned", vl:"Right in the eyes of the LORD — all the days of Jehoiada the priest",
+ sum:"The rescued boy-king repaired the temple with a chest-and-proclamation funding system that actually worked. But his goodness was borrowed: when his mentor Jehoiada died, the officials flattered him into idolatry, and when Jehoiada's own son Zechariah prophesied against him, Joash had him stoned in the temple court — the house where Joash himself had been hidden.",
+ ev:["Crowned at seven; instructed by Jehoiada (2 Kgs 11:21–12:2)",
+     "Repairs the temple by the offering chest (2 Kgs 12:4–16)",
+     "After Jehoiada's death, abandons the temple for Asherim (2 Chr 24:17–18)",
+     "Orders the stoning of Zechariah son of Jehoiada — \"may the LORD see and avenge\" (2 Chr 24:20–22)",
+     "Strips the temple to buy off Hazael of Aram (2 Kgs 12:17–18)"],
+ death:"Assassinated on his bed by two of his own servants avenging Zechariah; buried in the city of David, but not in the tombs of the kings. †",
+ pr:"Zechariah son of Jehoiada",
+ refs:"2 Kings 11–12; 2 Chronicles 24",
+ note:"The phrase \"all the days of Jehoiada\" (2 Chr 24:2) is the entire diagnosis: a faith held on a mentor's strength that never became his own. Jesus likely alludes to Zechariah's murder in Matthew 23:35."},
+
+{id:"amaziah", n:"Amaziah", aka:"", k:"judah", dyn:"House of David", s:796, e:767, r:"29 years (Uzziah co-regent from 792)", age:25,
+ f:"Joash", m:"Jehoaddan of Jerusalem",
+ v:"turned", vl:"Did right — yet not with a whole heart (2 Chr 25:2)",
+ sum:"Began with measured obedience: executed his father's assassins but spared their children, citing the law of Moses; dismissed hired Israelite troops at a prophet's word and absorbed the financial loss. Then he defeated Edom — and brought home Edom's gods and worshiped them. Provoking Israel afterward, he was crushed, and Jerusalem's wall was broken by a fellow Israelite king.",
+ ev:["Spares the assassins' children per Deuteronomy 24:16 (2 Kgs 14:5–6)",
+     "Sends home 100,000 hired troops at the man of God's word (2 Chr 25:5–10)",
+     "Defeats Edom in the Valley of Salt — then adopts Edom's gods (2 Chr 25:11–16)",
+     "Challenges Jehoash of Israel; routed at Beth-shemesh; Jerusalem's wall breached, temple plundered (2 Kgs 14:8–14)"],
+ death:"A conspiracy formed in Jerusalem; he fled to Lachish and was hunted down and killed there. †",
+ pr:"An unnamed man of God; an unnamed prophet (2 Chr 25)",
+ refs:"2 Kings 14:1–22; 2 Chronicles 25",
+ note:"Worshiping the gods of a nation you just defeated is, as the prophet points out, incoherent (2 Chr 25:15) — and the narrator lets the absurdity stand as its own commentary on how little sense apostasy has to make."},
+
+{id:"uzziah", n:"Uzziah", aka:"called Azariah in Kings", k:"judah", dyn:"House of David", s:767, e:740, r:"52 years counted from 792 co-regency", age:16,
+ f:"Amaziah", m:"Jecoliah of Jerusalem",
+ v:"turned", vl:"Right in the eyes of the LORD — until he was strong",
+ sum:"One of Judah's most capable kings: fortified Jerusalem with engine-mounted towers, reorganized the army, dug cisterns, loved the soil. \"He was marvelously helped, till he was strong. But when he was strong, he grew proud, to his destruction\" — and entered the temple to burn incense himself, a priest's office, and left it a leper.",
+ ev:["Sought God in the days of Zechariah his instructor (2 Chr 26:5)",
+     "Military and agricultural expansion; siege engines on the towers (2 Chr 26:6–15)",
+     "Enters the temple to burn incense; withstood by Azariah and eighty priests (2 Chr 26:16–18)",
+     "Struck with leprosy at the altar of incense; lives out his reign in a separate house (2 Chr 26:19–21)"],
+ death:"Died a leper, excluded from the house of the LORD; buried in a burial field belonging to the kings. Isaiah's call is dated \"in the year that King Uzziah died\" (Isa 6:1).",
+ pr:"Zechariah (his instructor); Isaiah, Amos, Hosea active in his era",
+ refs:"2 Kings 15:1–7; 2 Chronicles 26; Isaiah 6:1",
+ note:"The earthquake \"in the days of Uzziah\" (Amos 1:1; Zech 14:5) has left visible destruction layers at Hazor and other sites, usually dated c. 760 BC. His long reign is the clearest co-regency case: 52 years counted from 792, though Amaziah lived until 767."},
+
+{id:"jotham", n:"Jotham", aka:"", k:"judah", dyn:"House of David", s:740, e:732, r:"16 years counted from 750 co-regency", age:25,
+ f:"Uzziah", m:"Jerusha daughter of Zadok",
+ v:"good", vl:"Did right — and did not enter the temple of the LORD",
+ sum:"Governed as regent through his father's leprosy, then reigned in his own right. Chronicles adds a pointed clause to his approval: he did right \"but he did not enter the temple of the LORD\" — his father's presumption learned as a warning. He built, fortified, and subdued Ammon; the people, meanwhile, kept corrupting themselves.",
+ ev:["Judges the people of the land during Uzziah's isolation (2 Kgs 15:5)",
+     "Builds the upper gate of the temple and cities in the hill country (2 Chr 27:3–4)",
+     "Defeats the Ammonites; receives tribute three years running (2 Chr 27:5)",
+     "Rezin of Aram and Pekah of Israel begin pressing Judah in his days (2 Kgs 15:37)"],
+ death:"Died and was buried in the city of David; his son Ahaz reigned.",
+ pr:"Isaiah, Hosea, Micah",
+ refs:"2 Kings 15:32–38; 2 Chronicles 27",
+ note:"\"He became mighty because he ordered his ways before the LORD his God\" (2 Chr 27:6) — the Chronicler's one-line theory of what his father had and lost."},
+
+{id:"ahaz", n:"Ahaz", aka:"", k:"judah", dyn:"House of David", s:732, e:715, r:"16 years (overlapping Jotham from 735)", age:20,
+ f:"Jotham", m:"Not recorded — the second omission in Judah's formula",
+ v:"evil", vl:"Did not do right — even burned his son in the fire",
+ sum:"Judah's deepest apostasy before Manasseh: child sacrifice in the valley of Hinnom, and under siege from Aram and Israel, a refusal of God's offered sign — \"I will not ask\" — answered by Isaiah's Immanuel prophecy anyway. He bought Assyrian rescue with temple treasure, copied a Damascus altar into the temple courts, and finally shut the temple doors.",
+ ev:["Makes his son pass through the fire (2 Kgs 16:3)",
+     "The Syro-Ephraimite crisis; Isaiah's sign of Immanuel refused and given (Isa 7)",
+     "Becomes Tiglath-pileser's vassal; the Damascus altar installed in the temple (2 Kgs 16:7–16)",
+     "Closes the doors of the house of the LORD (2 Chr 28:24)"],
+ death:"Died in Jerusalem; buried in the city, but not brought into the tombs of the kings of Israel (2 Chr 28:27).",
+ pr:"Isaiah, Micah, Hosea, Oded (in Samaria)",
+ refs:"2 Kings 16; 2 Chronicles 28; Isaiah 7–8",
+ note:"Ahaz appears in Assyrian records as \"Jehoahaz of Judah\" paying tribute to Tiglath-pileser III. A clay seal impression (bulla) reading \"belonging to Ahaz son of Jotham, king of Judah\" is among the earliest direct artifacts of a biblical king."},
+
+{id:"hezekiah", n:"Hezekiah", aka:"", k:"judah", dyn:"House of David", s:715, e:686, r:"29 years (co-regent from 729)", age:25,
+ f:"Ahaz", m:"Abijah daughter of Zechariah",
+ v:"good", vl:"Trusted in the LORD — after him was none like him among all the kings of Judah",
+ sum:"Reopened and cleansed the temple in his first month, smashed the high places, and even destroyed Moses' bronze serpent because it had become an idol. When Sennacherib's army swallowed Judah's fortified cities, Hezekiah spread the blasphemous letter before the LORD in the temple — and Jerusalem alone stood. His late-life pride over the Babylonian envoys is recorded too, with the exile foretold in its wake.",
+ ev:["Cleanses the temple and restores Passover, inviting the northern remnant (2 Chr 29–30)",
+     "Removes the high places; breaks the bronze serpent, Nehushtan (2 Kgs 18:4)",
+     "Digs the Siloam tunnel to secure Jerusalem's water (2 Chr 32:30)",
+     "Sennacherib's invasion, 701 BC; the angel of the LORD strikes the Assyrian camp (2 Kgs 18–19)",
+     "Illness, the sign of the reversed shadow, fifteen added years (2 Kgs 20:1–11)",
+     "Shows the Babylonian envoys everything; Isaiah announces where the treasure — and his sons — will go (2 Kgs 20:12–19)"],
+ death:"Died in honor; buried in the ascent of the tombs of the sons of David; all Judah honored him (2 Chr 32:33).",
+ pr:"Isaiah, Micah",
+ refs:"2 Kings 18–20; 2 Chronicles 29–32; Isaiah 36–39",
+ note:"Extraordinarily attested outside Scripture: Sennacherib's own prism boasts of shutting Hezekiah in Jerusalem \"like a bird in a cage\" — and conspicuously never claims to have taken the city. The Siloam tunnel and its inscription survive; you can walk it today. His stumble over the envoys (2 Chr 32:25–26, repented) keeps even the best king from being an idol."},
+
+{id:"manasseh", n:"Manasseh", aka:"", k:"judah", dyn:"House of David", s:686, e:642, r:"55 years — the longest reign (co-regent from 697)", age:12,
+ f:"Hezekiah", m:"Hephzibah",
+ v:"repent", vl:"Did more evil than the nations — then humbled himself greatly",
+ sum:"Undid everything his father built: altars to the host of heaven inside the temple courts, his sons burned in the fire, mediums and sorcery, Jerusalem filled \"with innocent blood from one end to the other.\" Kings ends there. Chronicles continues: dragged to Babylon with hooks, he humbled himself, prayed, was restored to his throne, and spent his last years tearing down his own altars.",
+ ev:["Rebuilds the high places; altars for Baal and the host of heaven in the temple (2 Kgs 21:3–5)",
+     "Burns his sons as offerings; practices sorcery and necromancy (2 Chr 33:6)",
+     "Fills Jerusalem with innocent blood (2 Kgs 21:16)",
+     "Taken with hooks to Babylon by Assyria; prays and is restored (2 Chr 33:11–13)",
+     "Removes the foreign gods and idol from the temple; restores the altar of the LORD (2 Chr 33:15–16)"],
+ death:"Died in Jerusalem and was buried in the garden of his house (2 Kgs 21:18).",
+ pr:"Unnamed prophets (2 Kgs 21:10); tradition — not Scripture — says Isaiah died under him",
+ refs:"2 Kings 21:1–18; 2 Chronicles 33:1–20",
+ note:"The one gradient on this chart that runs evil to good. Kings omits the repentance because its question is \"why did the exile happen?\" — and Manasseh is its answer (2 Kgs 24:3). Chronicles includes it because its question is \"can the exiled be restored?\" — and Manasseh is its answer. The \"Prayer of Manasseh\" in the Apocrypha is a later composition inspired by 2 Chr 33:18–19."},
+
+{id:"amon", n:"Amon", aka:"", k:"judah", dyn:"House of David", s:642, e:640, r:"2 years", age:22,
+ f:"Manasseh", m:"Meshullemeth daughter of Haruz of Jotbah",
+ v:"evil", vl:"Did evil as Manasseh had done — and did not humble himself",
+ sum:"Inherited his father's sins without his father's repentance; the Chronicler makes the contrast explicit — \"he did not humble himself before the LORD, as Manasseh his father had humbled himself, but Amon incurred guilt more and more.\" His own servants killed him within two years.",
+ ev:["Serves the idols his father had served (2 Kgs 21:21)",
+     "Assassinated by his servants in his own house; the people of the land execute the conspirators and enthrone eight-year-old Josiah (2 Kgs 21:23–24)"],
+ death:"Killed by conspiracy in his house; buried in the garden of Uzza. †",
+ pr:"—",
+ refs:"2 Kings 21:19–26; 2 Chronicles 33:21–25",
+ note:"A two-year hinge with one lesson attached: a father's late repentance is not heritable. Each king is judged on his own response."},
+
+{id:"josiah", n:"Josiah", aka:"", k:"judah", dyn:"House of David", s:640, e:609, r:"31 years", age:8,
+ f:"Amon", m:"Jedidah daughter of Adaiah of Bozkath",
+ v:"good", vl:"Before him was no king like him, who turned to the LORD with all his heart",
+ sum:"Crowned at eight, seeking God by sixteen, purging Judah by twenty. When the Book of the Law surfaced during temple repairs, he tore his clothes at what he heard, gathered the nation, and led the most thorough reform in the monarchy's history — defiling Topheth, destroying Bethel's altar as a prophet had named him three centuries early, and keeping a Passover unmatched since the judges. He died at Megiddo intercepting Pharaoh Neco.",
+ ev:["Begins to seek God at sixteen; purges Judah and even the ruined north (2 Chr 34:3–7)",
+     "Hilkiah finds the Book of the Law; Huldah the prophetess authenticates the coming judgment (2 Kgs 22)",
+     "Covenant renewal; the great purge, including Bethel per 1 Kings 13:2 (2 Kgs 23:1–20)",
+     "The unmatched Passover of his eighteenth year (2 Kgs 23:21–23)",
+     "Killed opposing Neco at Megiddo, 609 BC (2 Chr 35:20–24)"],
+ death:"Mortally wounded by archers at Megiddo; all Judah mourned; Jeremiah composed laments for him. †",
+ pr:"Jeremiah, Zephaniah, Huldah, Nahum",
+ refs:"2 Kings 22–23; 2 Chronicles 34–35",
+ note:"The sobering coda: even Josiah's reform could not reverse the sentence Manasseh's generation had earned (2 Kgs 23:26). And Chronicles reports that Neco's warning \"came from the mouth of God\" (2 Chr 35:22) — the best of kings dying in his one recorded act of not listening. All four of Judah's final kings are his sons or grandson."},
+
+{id:"jehoahaz-j", n:"Jehoahaz", aka:"birth name Shallum (Jer 22:11)", k:"judah", dyn:"House of David", s:609, e:609, r:"3 months", age:23,
+ f:"Josiah", m:"Hamutal daughter of Jeremiah of Libnah",
+ v:"evil", vl:"Did evil in the eyes of the LORD",
+ sum:"The people's choice after Josiah fell — and Egypt's veto. Pharaoh Neco deposed him within three months, fined the land, and carried him to Egypt, where he died. Jeremiah's word: weep not for the dead Josiah, but for the one who goes away and returns no more.",
+ ev:["Made king by the people of the land (2 Kgs 23:30)",
+     "Deposed and imprisoned at Riblah by Neco; taken to Egypt (2 Kgs 23:33–34)"],
+ death:"Died in Egypt, the first king of Judah to die in exile (2 Kgs 23:34; Jer 22:10–12).",
+ pr:"Jeremiah",
+ refs:"2 Kings 23:31–34; 2 Chronicles 36:1–4; Jeremiah 22:10–12",
+ note:"From here to the end, no king of Judah rules free: each is installed or removed by Egypt or Babylon. The exile begins functionally in 609, before it begins formally."},
+
+{id:"jehoiakim", n:"Jehoiakim", aka:"birth name Eliakim, renamed by Pharaoh Neco", k:"judah", dyn:"House of David", s:609, e:598, r:"11 years", age:25,
+ f:"Josiah", m:"Zebidah daughter of Pedaiah of Rumah",
+ v:"evil", vl:"Did evil in the eyes of the LORD",
+ sum:"Egypt's appointee and Jeremiah's chief persecutor. Built himself a cedar palace with unpaid labor while the kingdom crumbled; column by column, he sliced up Jeremiah's dictated scroll and fed it to his brazier — and the scroll was simply rewritten, longer. He killed the prophet Uriah; he switched allegiance from Egypt to Babylon and back, and the second choice was fatal.",
+ ev:["Taxes the land to pay Neco's fine (2 Kgs 23:35)",
+     "Executes the prophet Uriah son of Shemaiah (Jer 26:20–23)",
+     "Burns Jeremiah's scroll in the winter house fire, 604 BC (Jer 36)",
+     "Serves Nebuchadnezzar three years, then rebels (2 Kgs 24:1)"],
+ death:"Died during or just before Babylon's reprisal; Jeremiah had prophesied \"the burial of a donkey\" for him (Jer 22:18–19; 36:30).",
+ pr:"Jeremiah, Habakkuk, Uriah",
+ refs:"2 Kings 23:36–24:7; 2 Chronicles 36:5–8; Jeremiah 22, 26, 36",
+ note:"Jeremiah 36 is the Bible's most vivid scene of a ruler attempting to destroy the word of God — and the chapter's quiet punchline is that the burned scroll's replacement contained \"many similar words\" added (Jer 36:32)."},
+
+{id:"jehoiachin", n:"Jehoiachin", aka:"also Jeconiah; contemptuously \"Coniah\" in Jeremiah", k:"judah", dyn:"House of David", s:598, e:597, r:"3 months", age:18,
+ f:"Jehoiakim", m:"Nehushta daughter of Elnathan of Jerusalem",
+ v:"evil", vl:"Did evil in the eyes of the LORD",
+ sum:"Reigned three months and surrendered Jerusalem to Nebuchadnezzar in person, going into exile with the queen mother, the officials, the craftsmen, and the temple treasures — the deportation that carried Ezekiel to Babylon. Yet the book of Kings ends, deliberately, with this king: released from prison thirty-seven years later, given a seat above the other captive kings, eating at the emperor's table.",
+ ev:["Surrenders to Nebuchadnezzar, 16 March 597 BC — a date fixed by the Babylonian Chronicle (2 Kgs 24:12)",
+     "The first great deportation: 10,000, including Ezekiel (2 Kgs 24:14–16)",
+     "Jeremiah's signet-ring oracle against \"Coniah\": none of his seed to prosper on David's throne (Jer 22:24–30)",
+     "Released and honored by Evil-merodach in the 37th year of exile (2 Kgs 25:27–30)"],
+ death:"Died in Babylon, in honor at the royal table; the date is unrecorded.",
+ pr:"Jeremiah; Ezekiel dates his visions by \"King Jehoiachin's exile\"",
+ refs:"2 Kings 24:8–17; 25:27–30; 2 Chronicles 36:9–10; Jeremiah 22:24–30",
+ note:"Babylonian ration tablets listing \"Jehoiachin, king of Judah\" and his sons survive in Berlin's museums. And Matthew's genealogy runs Messiah's legal line straight through him (Matt 1:11–12) — Jeremiah's oracle barred his seed from the throne by ordinary succession, and Zerubbabel his grandson governs but never reigns; how the line still reaches David's greater Son through a virgin birth is a genuinely rich discussion for an advanced class."},
+
+{id:"zedekiah", n:"Zedekiah", aka:"birth name Mattaniah, renamed by Nebuchadnezzar", k:"judah", dyn:"House of David", s:597, e:586, r:"11 years", age:21,
+ f:"Josiah (uncle of Jehoiachin)", m:"Hamutal daughter of Jeremiah of Libnah — also mother of Jehoahaz",
+ v:"evil", vl:"Did evil — and did not humble himself before Jeremiah the prophet",
+ sum:"Babylon's appointee, bound by an oath in God's name that he broke. He consulted Jeremiah secretly and repeatedly, half-believing, never obeying — afraid of his officials, afraid of the exiles' mockery, afraid of everything but God. His rebellion brought the eighteen-month siege that ended the kingdom: famine, breach, flight, capture.",
+ ev:["Installed by Nebuchadnezzar under oath (2 Chr 36:13; Ezek 17:13–19)",
+     "Secret consultations with the imprisoned Jeremiah (Jer 37–38)",
+     "Rebels; the final siege begins, January 588 (2 Kgs 25:1)",
+     "The wall breached, July 586; flight toward the Arabah; captured near Jericho (2 Kgs 25:4–6)",
+     "Temple and city burned by Nebuzaradan a month later (2 Kgs 25:8–10)"],
+ death:"At Riblah his sons were slaughtered before his eyes — the last thing he saw; then he was blinded, bound in bronze, and taken to Babylon, where he died in prison (2 Kgs 25:6–7; Jer 52:11). †",
+ pr:"Jeremiah, Ezekiel (in exile)",
+ refs:"2 Kings 24:18–25:21; 2 Chronicles 36:11–21; Jeremiah 37–39, 52",
+ note:"Ezekiel 12:13 had said he would be brought to Babylon \"yet he shall not see it\" — fulfilled with terrible precision at Riblah. With him the monarchy ends; the throne stays empty until, as Ezekiel 21:27 puts it, \"he comes to whom it rightly belongs.\""},
+
+/* ---- Israel (north) ---- */
+{id:"jeroboam1", n:"Jeroboam I", aka:"", k:"israel", dyn:"House of Jeroboam", s:931, e:910, r:"22 years", age:null,
+ f:"Nebat, an Ephraimite of Zeredah", m:"Zeruah, a widow — one of the few named mothers in the north",
+ v:"evil", vl:"The sin that named all the others",
+ sum:"Solomon's gifted labor-overseer, promised ten tribes by the prophet Ahijah — with a conditional offer of an enduring house like David's, if he would obey. Instead, fearing that pilgrimage to Jerusalem would cost him the kingdom, he cast two golden calves for Bethel and Dan, invented a rival priesthood and festival, and became the measuring rod of northern evil: forty times the record says a king walked \"in the sins of Jeroboam.\"",
+ ev:["Ahijah's torn cloak: ten pieces, and a conditional dynasty offer (1 Kgs 11:29–39)",
+     "Made king by the assembly at Shechem (1 Kgs 12:20)",
+     "The golden calves: \"behold your gods, O Israel\" — Aaron's words recycled (1 Kgs 12:26–33)",
+     "The man of God from Judah names Josiah at Bethel's altar, three centuries early (1 Kgs 13:1–3)",
+     "Ahijah's judgment through the disguised queen: the house will be swept away like dung (1 Kgs 14:1–16)"],
+ death:"Struck down by the LORD per Chronicles (2 Chr 13:20); succeeded by Nadab.",
+ pr:"Ahijah of Shiloh; the man of God from Judah",
+ refs:"1 Kings 11:26–14:20; 2 Chronicles 13",
+ note:"His calf-cult was politically shrewd and theologically fatal — likely framed not as new gods but as new images of the LORD, which is exactly what the second commandment forbids. Excavations at Tel Dan have uncovered the high place complex his cult used."},
+
+{id:"nadab", n:"Nadab", aka:"", k:"israel", dyn:"House of Jeroboam", s:910, e:909, r:"2 years", age:null,
+ f:"Jeroboam I", m:"Not recorded",
+ v:"evil", vl:"Walked in the way of his father",
+ sum:"Two years, one verdict, one conspiracy. Killed by Baasha during a siege at Gibbethon, and with him Jeroboam's entire house was exterminated — fulfilling Ahijah's word within a single generation of the dynasty's founding.",
+ ev:["Continues the calf-cult (1 Kgs 15:26)",
+     "Struck down by Baasha at the siege of Gibbethon (1 Kgs 15:27)"],
+ death:"Assassinated by Baasha, who then destroyed all the house of Jeroboam (1 Kgs 15:28–29). †",
+ pr:"—",
+ refs:"1 Kings 15:25–31",
+ note:"The conditional dynasty Ahijah offered Jeroboam (1 Kgs 11:38) lasted exactly one son."},
+
+{id:"baasha", n:"Baasha", aka:"", k:"israel", dyn:"House of Baasha", s:909, e:886, r:"24 years", age:null,
+ f:"Ahijah of the house of Issachar", m:"Not recorded",
+ v:"evil", vl:"Walked in the way of Jeroboam — whose house he had destroyed",
+ sum:"The usurper who executed God's sentence on Jeroboam's house and then reproduced Jeroboam's sins exactly — earning his own house the identical sentence through the prophet Jehu son of Hanani. His fortress-building at Ramah, meant to blockade Judah, collapsed when Asa bought Aramean intervention.",
+ ev:["Exterminates the house of Jeroboam (1 Kgs 15:29)",
+     "Fortifies Ramah against Judah; forced to abandon it (1 Kgs 15:17–21)",
+     "Jehu son of Hanani pronounces the same doom he had executed (1 Kgs 16:1–4)"],
+ death:"Died and was buried at Tirzah; his son Elah succeeded him (1 Kgs 16:6).",
+ pr:"Jehu son of Hanani",
+ refs:"1 Kings 15:16–16:7",
+ note:"1 Kings 16:7 holds both truths at once: Baasha was judged for the sins of his reign and for destroying Jeroboam's house — the instrument of judgment is not exempt from it. Being used by God and being approved by God are different things."},
+
+{id:"elah", n:"Elah", aka:"", k:"israel", dyn:"House of Baasha", s:886, e:885, r:"2 years", age:null,
+ f:"Baasha", m:"Not recorded",
+ v:"evil", vl:"The verdict falls on the house",
+ sum:"Murdered while drinking himself drunk in his steward's house at Tirzah — his army meanwhile in the field at Gibbethon — by Zimri, commander of half his chariots. Baasha's house fell as Jeroboam's had, to the last man.",
+ ev:["Drinks in the house of Arza while the army besieges Gibbethon (1 Kgs 16:9)",
+     "Zimri strikes him down and exterminates the house of Baasha (1 Kgs 16:10–12)"],
+ death:"Assassinated by Zimri while drunk (1 Kgs 16:9–10). †",
+ pr:"—",
+ refs:"1 Kings 16:8–14",
+ note:"The second dynasty ends exactly as the first: at the same town's siege, by a commander's hand, in fulfillment of a prophet's word."},
+
+{id:"zimri", n:"Zimri", aka:"", k:"israel", dyn:"House of Zimri", s:885, e:885, r:"7 days", age:null,
+ f:"Not recorded", m:"Not recorded",
+ v:"evil", vl:"Seven days — and still the formula applies",
+ sum:"The shortest reign in either kingdom. The army at Gibbethon, hearing of the coup, crowned their general Omri on the spot and marched on Tirzah; Zimri, seeing the city taken, walked into the citadel of the king's house and burned it down over himself. The narrator still pauses to record that he died \"because of his sins... walking in the way of Jeroboam.\"",
+ ev:["Kills Elah and all Baasha's house (1 Kgs 16:10–12)",
+     "The army proclaims Omri; Tirzah besieged (1 Kgs 16:15–17)"],
+ death:"Burned the king's house over himself and died in the flames (1 Kgs 16:18). †",
+ pr:"—",
+ refs:"1 Kings 16:9–20",
+ note:"\"Is it peace, Zimri, murderer of your master?\" — Jezebel's taunt to Jehu decades later (2 Kgs 9:31) shows his name had become a proverb for treachery that ends badly."},
+
+{id:"tibni", n:"Tibni", aka:"rival claimant — never fully king", k:"israel", dyn:"—", s:885, e:880, r:"c. 5 years of civil war", age:null,
+ f:"Ginath", m:"Not recorded",
+ v:"evil", vl:"Half the people followed him",
+ sum:"After Zimri's fiery end, Israel split between Tibni son of Ginath and Omri the general. For roughly five years the north had two rival claimants — a civil war the narrator compresses into two verses. \"The people who followed Omri overcame the people who followed Tibni. So Tibni died, and Omri became king.\"",
+ ev:["Half of Israel follows Tibni, half Omri (1 Kgs 16:21)",
+     "Omri's faction prevails; Tibni dies (1 Kgs 16:22)"],
+ death:"Died as Omri prevailed — the text does not say how (1 Kgs 16:22).",
+ pr:"—",
+ refs:"1 Kings 16:21–22",
+ note:"Included here because he explains an otherwise broken date: Omri's 12 years are counted from 885, but he ruled alone only from about 880. The Bible's own chronology quietly accounts for the civil war."},
+
+{id:"omri", n:"Omri", aka:"", k:"israel", dyn:"House of Omri", s:885, e:874, r:"12 years (sole rule from c. 880)", age:null,
+ f:"Not recorded", m:"Not recorded",
+ v:"evil", vl:"Did more evil than all who were before him",
+ sum:"Politically, the north's most consequential king: he bought a hill, built Samaria on it as a purpose-made capital, and founded a dynasty so internationally significant that Assyria called Israel \"the house of Omri\" for a century after his line was gone. Scripture gives this titan eight verses and the era's harshest verdict — a deliberate inversion of the world's scale of importance.",
+ ev:["Proclaimed king by the army at Gibbethon (1 Kgs 16:16)",
+     "Prevails over Tibni after civil war (1 Kgs 16:22)",
+     "Buys the hill of Samaria for two talents; builds the capital (1 Kgs 16:24)"],
+ death:"Died and was buried in Samaria; Ahab his son reigned (1 Kgs 16:28).",
+ pr:"—",
+ refs:"1 Kings 16:21–28",
+ note:"The Mesha Stele (Moabite Stone) names Omri as Moab's oppressor; Assyrian records call the land \"Bit-Humri.\" The gap between his worldly stature and his eight biblical verses is itself the lesson: the narrator's measure of a king is not the archaeologist's."},
+
+{id:"ahab", n:"Ahab", aka:"", k:"israel", dyn:"House of Omri", s:874, e:853, r:"22 years", age:null,
+ f:"Omri", m:"Not recorded",
+ v:"evil", vl:"Sold himself to do evil — yet see the note",
+ sum:"Married Jezebel of Sidon and moved Israel from illicit worship of the LORD to open state Baalism — temple, altar, and four hundred fifty prophets on the payroll. Against him stood Elijah: the drought, Carmel's fire, and the verdict in Naboth's vineyard. Yet when Elijah pronounced his doom, Ahab tore his clothes and fasted in sackcloth — and God noticed, and delayed.",
+ ev:["Marries Jezebel; builds Baal's temple in Samaria (1 Kgs 16:31–33)",
+     "Elijah's drought and the fire on Carmel (1 Kgs 17–18)",
+     "Spares Ben-hadad against God's word (1 Kgs 20:42)",
+     "Naboth's vineyard: judicial murder by his wife's letters, in his name (1 Kgs 21)",
+     "Humbles himself at Elijah's sentence; judgment deferred a generation (1 Kgs 21:27–29)",
+     "Micaiah's vision of the lying spirit; Ahab disguises himself at Ramoth-gilead (1 Kgs 22)"],
+ death:"Struck between the scale-armor joints by an arrow drawn \"at random\"; propped in his chariot until evening, he died, and dogs licked his blood as the word had said (1 Kgs 22:34–38).",
+ pr:"Elijah; Micaiah son of Imlah; unnamed prophets",
+ refs:"1 Kings 16:29–22:40",
+ note:"Two honest complications worth teaching: Ahab's repentance was real enough for God to defer judgment (1 Kgs 21:29) — divine responsiveness even to a Baalist king. And the Kurkh Monolith records \"Ahab the Israelite\" fielding 2,000 chariots at Qarqar (853 BC), one of the largest contingents in the coalition — the same dual portrait as Omri: internationally formidable, biblically condemned."},
+
+{id:"ahaziah-i", n:"Ahaziah", aka:"of Israel — his nephew and namesake reigns in Judah a decade later", k:"israel", dyn:"House of Omri", s:853, e:852, r:"2 years", age:null,
+ f:"Ahab", m:"Jezebel",
+ v:"evil", vl:"Walked in the way of his father and mother",
+ sum:"Fell through the lattice of his upper chamber and, injured, sent messengers to consult Baal-zebub of Ekron — as if, in Elijah's words, there were no God in Israel to inquire of. Two fifty-man detachments sent to arrest the prophet were consumed by fire; the third captain begged for his men's lives. The answer was unchanged: you will not leave that bed.",
+ ev:["Falls through the lattice; inquires of Baal-zebub (2 Kgs 1:2)",
+     "Fire from heaven on two companies; the third captain's plea (2 Kgs 1:9–14)",
+     "Moab rebels after Ahab's death (2 Kgs 1:1; 3:5)"],
+ death:"Died in his bed according to the word of the LORD by Elijah; having no son, his brother Joram reigned (2 Kgs 1:17). ",
+ pr:"Elijah",
+ refs:"1 Kings 22:51–53; 2 Kings 1",
+ note:"Where a king seeks his oracle is the whole diagnostic. Jesus later has to answer the charge of working by \"Beelzebul\" (Mark 3:22) — the same Ekronite name, by then a byword for the prince of demons."},
+
+{id:"joram-i", n:"Joram", aka:"also spelled Jehoram — reigning simultaneously with Jehoram of Judah, his sister's husband", k:"israel", dyn:"House of Omri", s:852, e:841, r:"12 years", age:null,
+ f:"Ahab", m:"Jezebel",
+ v:"evil", vl:"Evil — though not like his father and mother",
+ sum:"Removed his father's pillar of Baal yet clung to the calves — a half-reform the narrator credits and condemns in one verse. His reign is the great Elisha era: the Moabite campaign, Naaman, the siege of Samaria and its famine, the Aramean wars. Wounded at Ramoth-gilead, he recovered at Jezreel — where Jehu found him.",
+ ev:["Puts away the pillar of Baal his father made (2 Kgs 3:2)",
+     "The Moabite campaign with Jehoshaphat; water by Elisha's word (2 Kgs 3)",
+     "Naaman healed; Gehazi's greed (2 Kgs 5)",
+     "The siege of Samaria, the famine, and the four lepers (2 Kgs 6:24–7:20)",
+     "Wounded fighting Hazael at Ramoth-gilead (2 Kgs 8:28–29)"],
+ death:"Shot through the heart by Jehu's drawn bow in the field of Naboth the Jezreelite — the location itself the sentence (2 Kgs 9:24–26). †",
+ pr:"Elisha",
+ refs:"2 Kings 3; 6:8–8:6; 9:14–26",
+ note:"With his death and Jezebel's the same day, the house of Omri ends — and drags Judah's king down with it, because the two houses had intermarried. The northern column's dynasty changes are never only northern news."},
+
+{id:"jehu", n:"Jehu", aka:"", k:"israel", dyn:"House of Jehu", s:841, e:814, r:"28 years", age:null,
+ f:"Jehoshaphat son of Nimshi (no relation to Judah's king)", m:"Not recorded",
+ v:"mixed", vl:"Commended for the purge — condemned for the calves",
+ sum:"Anointed in secret by Elisha's messenger and famous for driving \"like a madman,\" Jehu executed the sentence on Ahab's house with ruthless completeness: Joram, Jezebel, seventy sons, and every Baal-worshiper in the land, lured into Baal's own temple. God commended the obedience and promised his sons four generations. But Jehu kept the golden calves — zeal against Baal, none against Bethel — and in his days Israel began to be cut down.",
+ ev:["Anointed at Ramoth-gilead; the watchman knows his driving (2 Kgs 9:1–20)",
+     "Kills Joram; Jezebel thrown down, eaten by dogs per Elijah's word (2 Kgs 9:24–37)",
+     "Seventy sons of Ahab; the massacre of Baal's worshipers in Baal's temple (2 Kgs 10:1–28)",
+     "Retains the calves of Bethel and Dan (2 Kgs 10:29–31)",
+     "Hazael begins carving away Israel's Transjordan (2 Kgs 10:32–33)"],
+ death:"Died and was buried in Samaria; his dynasty proved the longest in the north — five kings, c. 90 years (2 Kgs 10:35).",
+ pr:"Elisha",
+ refs:"2 Kings 9–10",
+ note:"The one explicitly mixed verdict in the north (2 Kgs 10:30–31). Jehu appears bowing on Shalmaneser III's Black Obelisk (841 BC) — the only image of an Israelite king that survives from antiquity. Hosea 1:4 later announces punishment \"for the blood of Jezreel,\" a hard text worth wrestling with: commanded judgment executed with uncommanded relish."},
+
+{id:"jehoahaz-i", n:"Jehoahaz", aka:"of Israel — Judah's Jehoahaz comes two centuries later", k:"israel", dyn:"House of Jehu", s:814, e:798, r:"17 years", age:null,
+ f:"Jehu", m:"Not recorded",
+ v:"evil", vl:"Evil — yet the LORD heard him",
+ sum:"Under Hazael's grinding oppression Israel's army was reduced to fifty horsemen, ten chariots, and ten thousand foot — \"made like the dust at threshing.\" Then the striking sentence: Jehoahaz sought the LORD's favor, and the LORD listened, and gave Israel a deliverer. The verdict stays evil; the compassion is recorded anyway.",
+ ev:["Aram reduces Israel's army to a token force (2 Kgs 13:7)",
+     "Jehoahaz entreats the LORD; a savior granted (2 Kgs 13:4–5)"],
+ death:"Died and was buried in Samaria (2 Kgs 13:9).",
+ pr:"Elisha (aged, still living)",
+ refs:"2 Kings 13:1–9",
+ note:"A useful corrective for students: God's mercy in the record is not a reward chip for good kings. He answers an evil king's cry out of compassion for the people (2 Kgs 13:23, \"because of his covenant with Abraham, Isaac, and Jacob\")."},
+
+{id:"jehoash-i", n:"Jehoash", aka:"also Joash — reigning a generation after Joash of Judah", k:"israel", dyn:"House of Jehu", s:798, e:782, r:"16 years", age:null,
+ f:"Jehoahaz", m:"Not recorded",
+ v:"evil", vl:"Evil — yet he wept over Elisha",
+ sum:"The evil king who came down and wept over the dying Elisha, calling him \"my father, the chariots of Israel and its horsemen.\" Told to strike the ground with arrows, he struck three times and stopped — and got exactly three victories over Aram, no more. He also crushed Amaziah of Judah's foolish challenge and broke down Jerusalem's wall.",
+ ev:["Weeps at Elisha's deathbed; the arrow of victory (2 Kgs 13:14–19)",
+     "Recovers three cities from Ben-hadad, per the three strikes (2 Kgs 13:25)",
+     "The thistle-and-cedar parable to Amaziah; victory at Beth-shemesh; Jerusalem's wall breached (2 Kgs 14:8–14)"],
+ death:"Died and was buried in Samaria with the kings of Israel (2 Kgs 13:13).",
+ pr:"Elisha (dies in his reign)",
+ refs:"2 Kings 13:10–25; 14:8–16",
+ note:"The three arrows are a standing image of half-hearted appropriation: the deliverance offered was complete; the striking was not. The limit was set by the king's own hand."},
+
+{id:"jeroboam2", n:"Jeroboam II", aka:"", k:"israel", dyn:"House of Jehu", s:782, e:753, r:"41 years counted from 793 co-regency", age:null,
+ f:"Jehoash", m:"Not recorded",
+ v:"evil", vl:"Evil — under the north's most prosperous reign",
+ sum:"Israel's political zenith: borders restored \"from Lebo-hamath to the Sea of the Arabah\" as Jonah son of Amittai had prophesied, wealth pouring into Samaria's ivory houses. Into exactly this prosperity God sent Amos and Hosea — because the boom was built on crushed poor, bought courts, and shrines full of noise. The verdict on the era's religion: \"I hate, I despise your feasts.\"",
+ ev:["Restores Israel's borders per Jonah's prophecy (2 Kgs 14:25)",
+     "God saves Israel by his hand despite the era's evil (2 Kgs 14:26–27)",
+     "Amos confronted at Bethel by Amaziah the priest: \"never again prophesy here\" (Amos 7:10–17)",
+     "Hosea's marriage-parable of Israel's unfaithfulness begins in his days (Hos 1:1)"],
+ death:"Died and was buried with the kings of Israel; his son Zechariah reigned — briefly (2 Kgs 14:29).",
+ pr:"Jonah, Amos, Hosea",
+ refs:"2 Kings 14:23–29; Amos; Hosea 1–3",
+ note:"The same Jonah who preached at Nineveh first prophesied this expansion — national blessing announced for a kingdom under an evil king, \"for the LORD saw the affliction of Israel\" (2 Kgs 14:26). Prosperity, the prophets insist, is not a verdict. Within thirty years of his death the kingdom no longer existed."},
+
+{id:"zechariah-i", n:"Zechariah", aka:"", k:"israel", dyn:"House of Jehu", s:753, e:753, r:"6 months", age:null,
+ f:"Jeroboam II", m:"Not recorded",
+ v:"evil", vl:"The fourth generation — as promised, and no further",
+ sum:"Six months, then assassination before the people — and the narrator immediately quotes the reason the dynasty ends here: \"This was the word of the LORD which he spoke to Jehu: your sons to the fourth generation shall sit on the throne of Israel. And so it came to pass.\" From here Israel spirals: four of its last six kings die by conspiracy.",
+ ev:["Struck down publicly by Shallum (2 Kgs 15:10)",
+     "The four-generation promise to Jehu closes exactly (2 Kgs 15:12)"],
+ death:"Assassinated by Shallum son of Jabesh (2 Kgs 15:10). †",
+ pr:"Hosea (his book spans this collapse)",
+ refs:"2 Kings 15:8–12",
+ note:"Fulfillment tracked to the generation: Jehu, Jehoahaz, Jehoash, Jeroboam II, Zechariah — then the axe."},
+
+{id:"shallum", n:"Shallum", aka:"", k:"israel", dyn:"House of Shallum", s:752, e:752, r:"1 month", age:null,
+ f:"Jabesh", m:"Not recorded",
+ v:"evil", vl:"One month of stolen throne",
+ sum:"Killed a king and reigned a single month in Samaria before Menahem came up from Tirzah and did to him what he had done to Zechariah. The north is now in freefall: three kings within one year.",
+ ev:["Assassinates Zechariah, ending Jehu's house (2 Kgs 15:10)",
+     "Struck down by Menahem after one month (2 Kgs 15:14)"],
+ death:"Assassinated by Menahem son of Gadi (2 Kgs 15:14). †",
+ pr:"Hosea",
+ refs:"2 Kings 15:13–15",
+ note:"Hosea 8:4 reads like this chart's caption: \"They made kings, but not through me; they set up princes, but I knew it not.\""},
+
+{id:"menahem", n:"Menahem", aka:"", k:"israel", dyn:"House of Menahem", s:752, e:742, r:"10 years", age:null,
+ f:"Gadi", m:"Not recorded",
+ v:"evil", vl:"Evil — with singular brutality",
+ sum:"Took the throne by murder and held it by atrocity: the record preserves his sack of Tiphsah, where he ripped open the pregnant women — savagery of the kind prophets attribute to foreign invaders, here committed by Israel's own king. When Assyria under Pul (Tiglath-pileser III) arrived, he bought survival with a thousand talents of silver, extracted from every man of wealth.",
+ ev:["Kills Shallum and takes the throne (2 Kgs 15:14)",
+     "The atrocity at Tiphsah (2 Kgs 15:16)",
+     "Pays Pul 1,000 talents, levied at fifty shekels a head, to \"confirm his hold on the kingdom\" (2 Kgs 15:19–20)"],
+ death:"Died — remarkably, in his bed — and his son Pekahiah reigned (2 Kgs 15:22).",
+ pr:"Hosea",
+ refs:"2 Kings 15:14–22",
+ note:"Menahem's tribute appears in Tiglath-pileser III's own annals (\"Menahem of Samaria\"). The Assyrian shadow that will end the kingdom is now permanently over it; every remaining reign is defined by how it handles Assyria."},
+
+{id:"pekahiah", n:"Pekahiah", aka:"", k:"israel", dyn:"House of Menahem", s:742, e:740, r:"2 years", age:null,
+ f:"Menahem", m:"Not recorded",
+ v:"evil", vl:"The formula, briefly",
+ sum:"Two years, then his own military captain Pekah, with fifty Gileadites, struck him down in the citadel of the king's house in Samaria — the fourth coup in thirteen years.",
+ ev:["Continues in the sins of Jeroboam (2 Kgs 15:24)",
+     "Assassinated in his own citadel by his captain (2 Kgs 15:25)"],
+ death:"Killed by Pekah son of Remaliah in the palace citadel (2 Kgs 15:25). †",
+ pr:"Hosea",
+ refs:"2 Kings 15:23–26",
+ note:"The house of Menahem: two kings, twelve years, ended from inside the palace guard."},
+
+{id:"pekah", n:"Pekah", aka:"", k:"israel", dyn:"House of Pekah", s:740, e:732, r:"credited 20 years — see note", age:null,
+ f:"Remaliah", m:"Not recorded",
+ v:"evil", vl:"Evil — and the first deportation falls in his days",
+ sum:"The captain-turned-king who, with Rezin of Aram, tried to force Judah into an anti-Assyrian coalition — the Syro-Ephraimite war that terrified Ahaz and occasioned Isaiah 7. The gambit summoned the very power it opposed: Tiglath-pileser stripped away Galilee, Gilead, and Naphtali and deported their people, the northern kingdom's first exile.",
+ ev:["Kills Pekahiah and takes the throne (2 Kgs 15:25)",
+     "With Rezin besieges Jerusalem; \"the two smoldering stumps\" of Isaiah 7:4 (2 Kgs 16:5; Isa 7)",
+     "Massive raid on Judah; the prophet Oded compels release of the captives (2 Chr 28:6–15)",
+     "Tiglath-pileser takes Galilee and Gilead; deportation begins (2 Kgs 15:29)"],
+ death:"Assassinated by Hoshea son of Elah — a coup Tiglath-pileser's annals claim credit for arranging (2 Kgs 15:30). †",
+ pr:"Isaiah (from Judah's side); Hosea; Oded",
+ refs:"2 Kings 15:27–31; 16:5–9; 2 Chronicles 28; Isaiah 7–8",
+ note:"His \"twenty years\" (2 Kgs 15:27) exceed the time available after Pekahiah. Thiele's solution — Pekah maintained a rival claim in Gilead from c. 752, counting his reign from there — fits the era's chaos and the text's arithmetic. It is a reconstruction, and honest teaching says so; it is also the kind of reconstruction the overlapping numbers themselves invite. Isaiah 9:1 promises that the very lands Assyria darkened first — Zebulun and Naphtali, Galilee of the nations — will see the great light first; Matthew 4:13–16 cashes the promise in Capernaum."},
+
+{id:"hoshea", n:"Hoshea", aka:"", k:"israel", dyn:"House of Hoshea", s:732, e:722, r:"9 years", age:null,
+ f:"Elah", m:"Not recorded",
+ v:"evil", vl:"Evil — yet not like the kings of Israel before him",
+ sum:"The north's last king carries its strangest verdict: evil, \"but not like the kings of Israel who were before him.\" It did not matter. Withholding tribute and courting Egypt — the broken reed — he was seized by Shalmaneser V; Samaria endured a three-year siege and fell in 722. The ten tribes were deported and resettled, and 2 Kings 17 delivers the full theological autopsy: this happened because they would not listen.",
+ ev:["Conspires against Pekah and takes the throne (2 Kgs 15:30)",
+     "Withholds tribute; sends to So, king of Egypt (2 Kgs 17:4)",
+     "Imprisoned by Shalmaneser; Samaria besieged three years (2 Kgs 17:4–5)",
+     "Samaria falls, 722 BC; Israel deported to Halah, Habor, and the cities of the Medes (2 Kgs 17:6)",
+     "Foreign peoples resettled in Samaria — the roots of the later Samaritans (2 Kgs 17:24–41)"],
+ death:"Disappears into an Assyrian prison; the text never records his death. †",
+ pr:"Hosea, Micah; Isaiah watching from Judah",
+ refs:"2 Kings 17",
+ note:"The bitter irony of the whole column: the least-bad northern king presides over the end. Judgment in Kings is cumulative, not transactional — two centuries of the sins of Jeroboam came due on the man who happened to be holding the throne. Sargon II's inscriptions claim the city's final capture and count 27,290 deportees."}
+];
+
+/* ---- Dynasties ---- */
+/* Nine northern houses. Edges follow the effective (sequential) spans
+   used by the layout, so bands sit flush against the reign blocks.
+   Zimri's house lasted seven days and Shallum's one month; both are
+   drawn at the minimum band height rather than to scale. */
+const DYNASTIES_I = [
+  {n:"Jeroboam", s:931, e:909},
+  {n:"Baasha", s:909, e:885},
+  {n:"Zimri", s:885, e:884.5},
+  {n:"Omri", s:884.5, e:841},
+  {n:"Jehu", s:841, e:752.5},
+  {n:"Shallum", s:752.5, e:751.5},
+  {n:"Menahem", s:751.5, e:740},
+  {n:"Pekah", s:740, e:732},
+  {n:"Hoshea", s:732, e:722}
+];
+const DYNASTIES_J = [
+  {n:"House of David", s:931, e:840.5},
+  {n:"Athaliah", s:840.5, e:835},
+  {n:"House of David", s:835, e:586}
+];
+
+/* ---- Prophets (approximate spans) ---- */
+const PROPHETS_J = [
+  {n:"Samuel", s:1050, e:1015},
+  {n:"Nathan · Gad", s:1005, e:965},
+  {n:"Isaiah", s:740, e:686},
+  {n:"Micah", s:737, e:700},
+  {n:"Zephaniah · Nahum", s:640, e:620},
+  {n:"Jeremiah", s:627, e:586},
+  {n:"Habakkuk", s:612, e:598}
+];
+const PROPHETS_I = [
+  {n:"Ahijah", s:931, e:910},
+  {n:"Elijah", s:870, e:852},
+  {n:"Elisha", s:852, e:796},
+  {n:"Jonah", s:790, e:760},
+  {n:"Amos", s:765, e:750},
+  {n:"Hosea", s:755, e:722}
+];
+
+/* ============================================================
+   Layout & rendering.
+   One shared, monotone year-to-pixel mapping for both columns:
+   proportional everywhere except that any reign shorter than
+   MIN_H is stretched — and because the stretch is applied to
+   the shared scale, cross-column synchronisms (Jehu/Athaliah
+   in 841, the falls of 722 and 586) stay exactly aligned.
+   ============================================================ */
+const PXY = 2.4;          // pixels per year at natural scale
+const MIN_H = 15;         // minimum block height
+
+/* strictly sequential effective spans per column (zero-length
+   reigns get a half-year sliver so they occupy real space) */
+(function computeEff(){
+  const chains = { united: [], judah: [], israel: [] };
+  KINGS.forEach(k => { if (k.id !== "tibni") chains[k.k].push(k); });
+  let unitedEnd = 1e9;
+  ["united", "judah", "israel"].forEach(key => {
+    let prevE = key === "united" ? 1e9 : unitedEnd;
+    chains[key].forEach(k => {
+      const s = Math.min(k.s, prevE);
+      let e = k.e;
+      if (e >= s) e = s - 0.5;
+      k.effS = s; k.effE = e; prevE = e;
+    });
+    if (key === "united") unitedEnd = prevE;
+  });
+  const t = KINGS.find(k => k.id === "tibni");
+  if (t){ t.effS = t.s; t.effE = t.e; }
+})();
+
+/* boundary years -> pixel positions, warped to satisfy minimums */
+const bset = new Set([1057, 931, 722, 590, 586, 575]);
+KINGS.forEach(k => { bset.add(k.effS); bset.add(k.effE); });
+DYNASTIES_I.concat(DYNASTIES_J).forEach(d => { bset.add(d.s); bset.add(d.e); });
+PROPHETS_I.concat(PROPHETS_J).forEach(p => { bset.add(p.s); bset.add(p.e); });
+for (let t = 1050; t >= 600; t -= 25) bset.add(t);
+
+const YRS = [...bset].sort((a, b) => b - a);           // descending BC
+const POS = YRS.map(yr => (YRS[0] - yr) * PXY);
+
+let changed = true, guard = 0;
+while (changed && guard++ < 60){
+  changed = false;
+  for (const k of KINGS){
+    if (k.id === "tibni") continue;
+    const si = YRS.indexOf(k.effS), ei = YRS.indexOf(k.effE);
+    const deficit = MIN_H - (POS[ei] - POS[si]);
+    if (deficit > 0.01){
+      for (let i = ei; i < POS.length; i++) POS[i] += deficit;
+      changed = true;
+    }
+  }
+}
+
+function y(v){
+  const i = YRS.findIndex(x => x <= v);
+  if (i === -1){
+    const L = YRS.length - 1;
+    return POS[L] + (YRS[L] - v) * PXY;
+  }
+  if (i === 0 || YRS[i] === v) return POS[i];
+  const f = (YRS[i - 1] - v) / (YRS[i - 1] - YRS[i]);
+  return POS[i - 1] + f * (POS[i] - POS[i - 1]);
+}
+
+const VIOLENT = new Set(["saul","ahab","nadab","elah","zimri","joram-i","zechariah-i","shallum","pekahiah","pekah","hoshea","ahaziah-j","athaliah","joash-j","amaziah","amon","josiah","zedekiah"]);
+
+const tl = document.getElementById("tl");
+const colJ = document.getElementById("colJ");
+const colI = document.getElementById("colI");
+const spine = document.getElementById("spine");
+const tlOuter = document.getElementById("tlOuter");
+
+let lastFocused = null;
+
+function makeBlock(k, idx){
+  const b = document.createElement("button");
+  b.className = "k v-" + k.v + (k.id === "tibni" ? " rival" : "");
+  b.type = "button";
+  b.dataset.idx = idx;
+  b.setAttribute("aria-label", k.n + ", " + (k.k === "united" ? "united monarchy" : k.k) + ", reigned " + k.s + (k.s === k.e ? "" : " to " + k.e) + " BC. Open details.");
+
+  const top = y(k.effS);
+  const h = Math.max(y(k.effE) - y(k.effS), MIN_H);
+  b.style.top = top + "px";
+  b.style.height = h + "px";
+  if (h <= 20) b.classList.add("tiny");
+
+  const yrLabel = (k.s === k.e) ? (k.s + " BC") : (k.s + "\u2013" + k.e);
+  b.innerHTML = '<span class="nm">' + k.n + '</span>' +
+                '<span class="yr">' + yrLabel + '</span>' +
+                (VIOLENT.has(k.id) ? '<span class="dg" aria-hidden="true">\u2020</span>' : '');
+  b.addEventListener("click", () => openCard(idx, b));
+  return b;
+}
+
+function render(){
+  // united label
+  const ul = document.createElement("div");
+  ul.className = "united-label";
+  ul.style.top = "0px";
+  ul.style.transform = "none";
+  ul.textContent = "The United Monarchy";
+  tl.appendChild(ul);
+
+  KINGS.forEach((k, i) => {
+    const b = makeBlock(k, i);
+    if (k.k === "united"){
+      b.style.left = "0"; b.style.right = "0"; b.style.position = "absolute";
+      tl.appendChild(b);
+    } else if (k.k === "judah"){
+      colJ.appendChild(b);
+    } else {
+      colI.appendChild(b);
+    }
+  });
+
+  // schism marker
+  const sc = document.createElement("div");
+  sc.className = "schism";
+  sc.style.top = (y(931) - 1) + "px";
+  sc.innerHTML = '<span class="lb" style="left:50%;transform:translateX(-50%)">931 BC \u00b7 the kingdom divides</span>';
+  tl.appendChild(sc);
+
+  // falls
+  const fallIY = y(722) + 4;
+  const fallI = document.createElement("div");
+  fallI.className = "fall fall-i";
+  fallI.style.top = fallIY + "px";
+  fallI.innerHTML = '<span class="lb" style="left:0">722 BC \u00b7 Samaria falls to Assyria</span>';
+  colI.appendChild(fallI);
+
+  const ghost = document.createElement("div");
+  ghost.className = "exile-ghost";
+  ghost.style.top = (fallIY + 28) + "px";
+  ghost.style.height = Math.max(y(590) - fallIY - 40, 90) + "px";
+  ghost.innerHTML = "The ten tribes deported;<br>the land resettled.<br>2 Kings 17";
+  colI.appendChild(ghost);
+
+  const fallJY = y(586) + 4;
+  const fallJ = document.createElement("div");
+  fallJ.className = "fall fall-j";
+  fallJ.style.top = fallJY + "px";
+  fallJ.innerHTML = '<span class="lb" style="right:0">586 BC \u00b7 Jerusalem falls to Babylon</span>';
+  colJ.appendChild(fallJ);
+
+  // spine ticks
+  for (let by = 1025; by >= 600; by -= 25){
+    const t = document.createElement("div");
+    t.className = "tick" + (by % 100 === 0 ? " major" : "");
+    t.style.top = y(by) + "px";
+    t.textContent = by;
+    spine.appendChild(t);
+  }
+
+  // dynasty bands
+  const dl = document.getElementById("dynLayer");
+  DYNASTIES_I.forEach(d => dl.appendChild(dynastyEl(d, "dyn")));
+  const dlj = document.getElementById("dynLayerJ");
+  DYNASTIES_J.forEach(d => dlj.appendChild(dynastyEl(d, "dyn-j")));
+
+  // prophets
+  const pj = document.getElementById("prJ"), pi = document.getElementById("prI");
+  PROPHETS_J.forEach(p => pj.appendChild(prophetEl(p)));
+  PROPHETS_I.forEach(p => pi.appendChild(prophetEl(p)));
+
+  // total height
+  const H = y(575) + 40;
+  [tl, dl, dlj, pj, pi].forEach(el => el.style.height = H + "px");
+  tlOuter.style.minHeight = H + "px";
+
+  // Labels can only be measured once they are in the document, so lane
+  // assignment and fit-checking run as a second pass.
+  relayoutLayers();
+}
+
+function dynastyEl(d, cls){
+  const el = document.createElement("div");
+  el.className = cls;
+  el.style.top = y(d.s) + "px";
+  el.style.height = Math.max(y(d.e) - y(d.s), 12) + "px";
+  el.title = d.n;
+  el.innerHTML = "<span>" + d.n + "</span>";
+  return el;
+}
+
+function prophetEl(p){
+  const el = document.createElement("div");
+  el.className = "pr";
+  el.style.top = y(p.s) + "px";
+  el.style.height = Math.max(y(p.e) - y(p.s), 14) + "px";
+  el.title = p.n;
+  el.innerHTML = "<span>" + p.n + "</span>";
+  return el;
+}
+
+/* Layers are display:none until their toggle is on, and an element inside a
+   display:none subtree measures as zero. Measuring has to happen with the
+   layer forced visible, or every label reports 0 and packs into lane 0. */
+function measurable(layer, fn){
+  const prev = layer.style.display;
+  layer.style.display = "block";
+  try { return fn(); } finally { layer.style.display = prev; }
+}
+
+function labelExtent(span){
+  const h = span.offsetHeight;
+  if (h) return h;
+  const fs = parseFloat(getComputedStyle(span).fontSize) || 9.5;
+  return span.textContent.length * fs * 0.72 + 6;   // fallback if fonts are still loading
+}
+
+function fitDynastyLabels(layer){
+  measurable(layer, () => {
+    [...layer.children].forEach(el => {
+      const span = el.firstElementChild;
+      span.style.display = "";
+      if (labelExtent(span) > el.offsetHeight - 6) span.style.display = "none";
+    });
+  });
+}
+
+/* Prophets DO overlap in time — Isaiah and Micah, Jeremiah and Habakkuk —
+   so each gets a lane of its own, packed into the first free column.
+   Parallel bars are the honest picture: these men were contemporaries. */
+function layoutLabels(layer, side){
+  return measurable(layer, () => {
+    const lanes = [];
+    let maxLane = 0;
+    [...layer.children].forEach(el => {
+      const top = parseFloat(el.style.top);
+      const extent = Math.max(el.offsetHeight, labelExtent(el.firstElementChild));
+      let lane = lanes.findIndex(bottom => top >= bottom + 4);
+      if (lane === -1) { lane = lanes.length; lanes.push(0); }
+      lanes[lane] = top + extent;
+      el.style[side === "j" ? "right" : "left"] =
+        lane ? "calc(" + lane + " * var(--lane-pitch))" : "0px";
+      if (lane > maxLane) maxLane = lane;
+    });
+    return maxLane + 1;
+  });
+}
+
+function relayoutLayers(){
+  layoutLabels(document.getElementById("prJ"), "j");
+  layoutLabels(document.getElementById("prI"), "i");
+  fitDynastyLabels(document.getElementById("dynLayer"));
+  fitDynastyLabels(document.getElementById("dynLayerJ"));
+}
+
+/* Web fonts change every measurement, and font sizes change at the
+   breakpoints, so re-pack once fonts land and again after a resize. */
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayoutLayers);
+let relayoutTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(relayoutTimer);
+  relayoutTimer = setTimeout(relayoutLayers, 180);
+});
+
+/* ============================================================
+   Detail card
+   ============================================================ */
+const overlay = document.getElementById("overlay");
+const card = document.getElementById("card");
+let currentIdx = -1;
+
+const VLABELS = {good:"Did right", evil:"Did evil", turned:"Began well \u2014 turned", repent:"Evil \u2014 then repented", mixed:"Mixed verdict"};
+const KLABELS = {united:["ku","The United Monarchy"], judah:["kj","Kingdom of Judah"], israel:["ki","Kingdom of Israel"]};
+
+function field(label, value, unrec){
+  return '<div class="f"><small>' + label + '</small><span' + (unrec ? ' class="unrec"' : '') + '>' + value + '</span></div>';
+}
+
+function openCard(idx, sourceEl){
+  const k = KINGS[idx];
+  currentIdx = idx;
+  if (sourceEl) lastFocused = sourceEl;
+
+  const kk = KLABELS[k.k];
+  document.getElementById("cKingdom").className = "c-kingdom " + kk[0];
+  document.getElementById("cKingdom").textContent = kk[1] + " \u00b7 " + k.dyn;
+  document.getElementById("cName").textContent = k.n;
+  const aka = document.getElementById("cAka");
+  aka.textContent = k.aka; aka.style.display = k.aka ? "" : "none";
+
+  const v = document.getElementById("cVerdict");
+  v.className = "c-verdict v-" + k.v;
+  v.textContent = k.vl;
+
+  const reignYears = (k.s === k.e) ? ("c. " + k.s + " BC") : (k.s + "\u2013" + k.e + " BC");
+  let g = field("Reigned", reignYears + " \u00b7 " + k.r);
+  if (k.age) g += field("Age at accession", k.age);
+  g += field("Father", k.f, /not recorded/i.test(k.f));
+  g += field("Mother", k.m, /not recorded|not stated/i.test(k.m));
+  g += field("Prophets in his era", k.pr === "\u2014" ? "None named" : k.pr, k.pr === "\u2014");
+  document.getElementById("cGrid").innerHTML = g;
+
+  document.getElementById("cSum").textContent = k.sum;
+  document.getElementById("cEvents").innerHTML = k.ev.map(e => "<li>" + e + "</li>").join("");
+  document.getElementById("cDeath").innerHTML = "<b>Death &amp; succession</b>" + k.death.replace(/\s*\u2020\s*$/, "");
+
+  const note = document.getElementById("cNote");
+  if (k.note){ note.style.display = ""; note.innerHTML = "<b>Honest note</b>" + k.note; }
+  else note.style.display = "none";
+
+  document.getElementById("cRefs").innerHTML = "<b>Read the record:</b> " + k.refs;
+
+  document.getElementById("prevBtn").disabled = idx <= 0;
+  document.getElementById("nextBtn").disabled = idx >= KINGS.length - 1;
+
+  overlay.classList.add("open");
+  document.body.style.overflow = "hidden";
+  card.scrollTop = 0;
+  document.getElementById("closeBtn").focus();
+}
+
+function closeCard(){
+  overlay.classList.remove("open");
+  document.body.style.overflow = "";
+  if (lastFocused) lastFocused.focus();
+}
+
+document.getElementById("closeBtn").addEventListener("click", closeCard);
+overlay.addEventListener("click", e => { if (e.target === overlay) closeCard(); });
+document.addEventListener("keydown", e => {
+  if (!overlay.classList.contains("open")) return;
+  if (e.key === "Escape") closeCard();
+  if (e.key === "ArrowLeft" && currentIdx > 0) openCard(currentIdx - 1);
+  if (e.key === "ArrowRight" && currentIdx < KINGS.length - 1) openCard(currentIdx + 1);
+});
+document.getElementById("prevBtn").addEventListener("click", () => { if (currentIdx > 0) openCard(currentIdx - 1); });
+document.getElementById("nextBtn").addEventListener("click", () => { if (currentIdx < KINGS.length - 1) openCard(currentIdx + 1); });
+
+/* ============================================================
+   Filters & toggles
+   ============================================================ */
+document.querySelectorAll(".chip[data-f]").forEach(chip => {
+  chip.addEventListener("click", () => {
+    document.querySelectorAll(".chip[data-f]").forEach(c => c.setAttribute("aria-pressed", "false"));
+    chip.setAttribute("aria-pressed", "true");
+    tlOuter.dataset.f = chip.dataset.f;
+  });
+});
+const tgDyn = document.getElementById("tg-dyn");
+tgDyn.addEventListener("click", () => {
+  const on = tgDyn.getAttribute("aria-pressed") !== "true";
+  tgDyn.setAttribute("aria-pressed", on);
+  tlOuter.classList.toggle("show-dyn", on);
+  if (on) relayoutLayers();
+});
+const tgPr = document.getElementById("tg-pr");
+tgPr.addEventListener("click", () => {
+  const on = tgPr.getAttribute("aria-pressed") !== "true";
+  tgPr.setAttribute("aria-pressed", on);
+  tlOuter.classList.toggle("show-pr", on);
+  if (on) relayoutLayers();
+});
+
+render();
+</script>
+</body>
+</html>
